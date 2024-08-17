@@ -63,11 +63,8 @@ deploy/scripts/vps-system-setup.sh
 
 - **Sentry**: Create a project and note down the **DSN**.
 - **AWS S3**: Create a bucket and note down the **bucket name**, **region**, **access key** and **secret**. Set a bucket lifecycle rule to delete files prefixed with `n8n-shortlink-backups` older than 10 days.
-- **DNS**: Add an A record pointing domain to IP address.
-- **GitHub**: Set up a repository. Create a **PAT** token with `read:packages` scope.
-- **Docker**: @TODO
-- **UptimeRobot**: Set up a monitor for the domain. Pause it. @TODO: Use Checkly
-@TODO: Add Makefile command to tail logs
+- **DNS**: Add A records for the `domain.com` and `grafana.domain.com`.
+- **GitHub**: Set up a repository. Create a **personal access token** with `read:packages` scope.
 
 ## 5. VPS tooling setup
 
@@ -107,7 +104,8 @@ echo '{
 }' > ~/.docker/config.json
 echo "N8N_SHORTLINK_SENTRY_DSN=$SENTRY_DSN" >> deploy/.env.production
 
+docker network create n8n-shortlink-network
 deploy/scripts/start-services.sh
 ```
 
-Unpause UptimeRobot monitor.
+Log in to `https://grafana.domain.com` and set a password for the Grafana admin user.
