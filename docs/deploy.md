@@ -64,7 +64,7 @@ deploy/scripts/vps-system-setup.sh
 - **Sentry**: Create a project and note down the **DSN**.
 - **AWS S3**: Create a bucket and note down the **bucket name**, **region**, **access key** and **secret**. Set a bucket lifecycle rule to delete files prefixed with `n8n-shortlink-backups` older than 10 days.
 - **DNS**: Add an A record pointing domain to IP address.
-- **GitHub**: Set up repository. @TODO: Token needed by GitHub Actions.
+- **GitHub**: Set up a repository. Create a **PAT** token with `read:packages` scope.
 - **Docker**: @TODO
 - **UptimeRobot**: Set up a monitor for the domain. Pause it. @TODO: Use Checkly
 @TODO: Add Makefile command to tail logs
@@ -92,10 +92,19 @@ Run server start script:
 ```sh
 export GITHUB_USER=<user-name-from-step-4>
 export GITHUB_REPO=<repo-name-from-step-4>
+export GITHUB_TOKEN=<github-token-from-step-4>
 export SENTRY_DSN=<sentry-dsn-from-step-4>
 
 echo "GITHUB_USER=$GITHUB_USER" >> deploy/.config
 echo "GITHUB_REPO=$GITHUB_REPO" >> deploy/.config
+mkdir -p ~/.docker
+echo '{
+  "auths": {
+    "ghcr.io": {
+      "auth": "'$(echo -n "$GITHUB_USER:$GITHUB_TOKEN" | base64)'"
+    }
+  }
+}' > ~/.docker/config.json
 echo "N8N_SHORTLINK_SENTRY_DSN=$SENTRY_DSN" >> deploy/.env.production
 
 deploy/scripts/start-services.sh
