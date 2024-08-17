@@ -14,8 +14,8 @@ curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo 
 sudo apt update
 sudo apt install caddy
 systemctl status caddy
-# mv deploy/Caddyfile /etc/caddy/Caddyfile
-systemctl reload caddy
+sudo mv deploy/Caddyfile /etc/caddy/Caddyfile
+sudo systemctl reload caddy
 
 echo "Caddy installed and running as systemd service, Caddyfile copied over"
 
