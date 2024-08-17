@@ -70,3 +70,4 @@ curl http://localhost:3001/debug/vars
 ## TODOs
 
 - [ ] Add caching to `audit.yml`
+- [ ] Enforce PRs and disable pushing to `master`
