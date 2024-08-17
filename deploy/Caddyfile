@@ -1,9 +1,3 @@
-{
-	servers {
-		header_up -Server
-	}
-}
-
 n8n.to {
 	encode gzip
 
@@ -30,5 +24,5 @@ www.n8n.to {
 grafana.n8n.to {
 	encode gzip
 
-	reverse_proxy localhost:3100
+	reverse_proxy localhost:3000
 }
