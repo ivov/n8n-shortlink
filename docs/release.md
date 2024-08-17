@@ -6,9 +6,9 @@ Pull latest changes:
 git pull origin master
 ```
 
-Create and push tag:
+Create tag (following semver) and push it:
 
 ```sh
-git tag v1.0.0 # follow semver
+git tag v1.0.0
 git push origin v1.0.0
 ```
