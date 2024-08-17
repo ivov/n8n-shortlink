@@ -1,7 +1,14 @@
-- pull
-- stop
-- start
+# Release
 
-fetch the latest docker compose + docker compose for monitoring + caddy from raw.githubusercontent
+Pull latest changes:
 
-sudo curl -o /etc/caddy/Caddyfile https://raw.githubusercontent.com/ivov/n8n-shortlink/main/deploy/Caddyfile
+```sh
+git pull origin master
+```
+
+Create and push tag:
+
+```sh
+git tag v1.0.0 # follow semver
+git push origin v1.0.0
+```
