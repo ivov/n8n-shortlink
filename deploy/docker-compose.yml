@@ -1,4 +1,3 @@
-version: '3.8'
 name: n8n-shortlink
 services:
   n8n-shortlink: 
