@@ -1,0 +1,330 @@
+/* Reset */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Fonts */
+
+@font-face {
+  font-family: "Lexend";
+  src: url("/static/fonts/Lexend-Regular.woff2") format("woff2"),
+    url("/static/fonts/Lexend-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Lexend";
+  src: url("/static/fonts/Lexend-Bold.woff2") format("woff2"),
+    url("/static/fonts/Lexend-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Base layout */
+
+body {
+  font-family: "Lexend", sans-serif;
+  background-color: rgb(16, 19, 46);
+  background-image: url("/static/img/background.svg");
+  background-size: 75%;
+  background-repeat: no-repeat;
+  background-position: right;
+}
+
+.overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 45%;
+  height: 100vh;
+  background-color: white;
+  padding-left: 50px;
+  clip-path: ellipse(100% 100% at 0% 50%);
+  /* padding-bottom: 50px; */
+}
+
+/* header and subtitle */
+
+h1 {
+  font-size: 2.5em;
+}
+
+.subtitle {
+  font-size: 1.2em;
+  margin-top: 0.3em;
+  margin-bottom: 2em;
+}
+
+/* form: main section */
+
+.content-and-submit {
+  display: flex;
+  flex-direction: row;
+}
+
+.main-section textarea {
+  margin: 0.8em 1em 0.8em 0;
+  width: 70%;
+  height: 82px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1.1em;
+  padding: 12px;
+  resize: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.1em;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 transparent;
+}
+
+.main-section textarea:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  outline: none;
+}
+
+.main-section textarea::placeholder {
+  color: #999;
+}
+
+.main-section input[type="submit"] {
+  width: 6em;
+  padding: 4px;
+  margin: 0.8em 0.4em 0.9em 0.4em;
+  background-color: #10b981;
+  color: white;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.main-section input[type="submit"]:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.main-section input[type="submit"]:disabled {
+  background-color: #b0b0b0;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.main-section input[type="submit"]:focus:not(:disabled) {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.5);
+}
+
+.main-section input[type="submit"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.5);
+}
+
+.label-and-error-message {
+  width: 70%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#error-message-workflow {
+  margin-top: 0.1em;
+  color: red;
+  font-size: 0.9em;
+  visibility: hidden;
+}
+
+/* form: optional settings */
+
+.settings-section {
+  display: flex;
+  flex-direction: row;
+}
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5em;
+}
+
+.setting label {
+  font-size: 0.9em;
+}
+
+.setting .checkbox-and-label {
+  width: 9em;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  margin-right: 5em;
+  margin-bottom: 0.2em;
+}
+
+.setting input[type="checkbox"] {
+  margin-right: 0.6em;
+  margin-left: 0.8em;
+}
+
+.setting input[type="text"],
+.setting input[type="password"] {
+  border: 2px solid #e0e0e0;
+  margin-left: 0.4em;
+  border-radius: 8px;
+  width: 13em;
+  padding: 6px;
+  resize: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: rgb(51, 51, 51);
+  font-family: monospace;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.setting input[type="text"].hidden,
+.setting input[type="password"].hidden {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.setting input::placeholder {
+  color: #999;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 0.6em;
+  margin-left: 0.4em;
+  visibility: hidden;
+  height: 1em;
+}
+
+/* modal */
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2em 2em 1em 2em;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal-content {
+  transform: translateY(0);
+}
+
+.modal-content h2 {
+  margin-bottom: 0.5em;
+  color: #10b981;
+}
+
+.modal-content p {
+  margin-bottom: 1em;
+}
+
+.modal-content button {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.modal-content .shortlink-container {
+  margin: 1em 0 1.5em 0;
+}
+
+.modal-content .shortlink {
+  display: inline-block;
+  background-color: rgb(16, 19, 46);
+  color: white;
+  font-weight: 700;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  max-width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.modal-content .shortlink:hover {
+  background-color: rgb(26, 29, 56);
+}
+
+.modal-content .shortlink:active {
+  transform: scale(0.95);
+}
+
+.modal-content button:hover {
+  background-color: #059669;
+}
+
+.modal-content code {
+  font-family: monospace;
+  background-color: rgb(16, 19, 46);
+  color: white;
+  padding: 0.25em 0.5em;
+  border-radius: 4px;
+  font-size: 0.85em;
+  display: inline-block;
+  vertical-align: baseline;
+  position: relative;
+  top: -1.5px;
+}
+
+.modal-content #success-tip {
+  margin-bottom: 1em;
+}
+
+/* github icon */
+
+.github-icon {
+  color: white;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2;
+  opacity: 0.8;
+}
+
+.github-icon:hover {
+  opacity: 1;
+  cursor: pointer;
+}

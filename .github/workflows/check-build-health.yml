@@ -1,0 +1,31 @@
+name: Check build health
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-health:
+    name: Check Docker container health
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build --tag n8n-shortlink:ci .
+
+      - name: Run Docker container
+        run: |
+          docker run --detach --publish 3001:3001 --name n8n-shortlink-ci n8n-shortlink:ci
+          sleep 10 # wait for container to start up
+
+      - name: Check health endpoint
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/health)
+          if [ $response -eq 200 ]; then
+            echo "Health check passed"
+            exit 0
+          else
+            echo "Health check failed with status code: $response"
+            exit 1
+          fi

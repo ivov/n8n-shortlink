@@ -1,0 +1,34 @@
+{
+	servers {
+		header_up -Server
+	}
+}
+
+n8n.to {
+	encode gzip
+
+	reverse_proxy localhost:3001
+
+	respond /debug/* "Forbidden" 403
+	respond /metrics "Forbidden" 403
+	respond /static/canvas.tmpl.html "Forbidden" 403
+	respond /static/swagger.html "Forbidden" 403
+
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 5MB
+			roll_keep 5
+			roll_keep_for 720h
+		}
+	}
+}
+
+www.n8n.to {
+	redir https://n8n.to{uri}
+}
+
+grafana.n8n.to {
+	encode gzip
+
+	reverse_proxy localhost:3100
+}

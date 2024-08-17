@@ -1,0 +1,38 @@
+name: Lint, test, vet
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  audit:
+    name: Audit
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.22
+
+    - name: Cache modules
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install dependencies
+      run: |
+        go mod download
+        go install golang.org/x/lint/golint@latest
+
+    - name: Lint, test and vet
+      run: |
+        golint ./...
+        go test -v ./...
+        go vet ./...

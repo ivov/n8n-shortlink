@@ -1,0 +1,18 @@
+{
+  "go.lintTool": "golint",
+  "go.lintOnSave": "package",
+  "workbench.colorCustomizations": {
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#abedd5",
+    "statusBar.background": "#81e4c0",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#57dbab",
+    "statusBarItem.remoteBackground": "#81e4c0",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#81e4c0",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#81e4c099",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#81e4c0"
+}

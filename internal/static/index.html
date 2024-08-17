@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/static/img/favicon.ico" />
+    <title>n8n shortlinks</title>
+    <link rel="stylesheet" href="/static/styles/index.css" />
+  </head>
+
+  <body>
+    <noscript>
+      <p>This application requires JavaScript.</p>
+    </noscript>
+
+    <div class="overlay">
+      <h1>n8n shortlinks</h1>
+      <p class="subtitle">Create shortlinks to your n8n workflows</p>
+
+      <form action="/shortlink" method="POST" onsubmit="handleSubmit(event)">
+        <!-- workflow and submit -->
+        <div class="main-section">
+          <div class="label-and-error-message">
+            <label for="content">Shorten your workflow or URL:</label>
+            <div id="error-message-workflow">Malformed JSON!</div>
+          </div>
+          <div class="content-and-submit">
+            <textarea
+              id="workflow-input"
+              placeholder="Paste your workflow JSON or URL here..."
+              name="content"
+              rows="3"
+            ></textarea>
+            <input id="shorten-button" type="submit" value="Shorten" disabled />
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <!-- vanity url -->
+          <div class="setting">
+            <div class="checkbox-and-label">
+              <input
+                type="checkbox"
+                id="vanity-url-toggle"
+                onclick="toggleVanityUrl()"
+              />
+              <label for="vanity-url-toggle">Vanity URL</label>
+            </div>
+            <input
+              type="text"
+              id="vanity-url-input"
+              name="slug"
+              placeholder="e.g. my-workflow"
+              class="hidden"
+            />
+            <div id="error-message-vanity-url" class="error-message"></div>
+          </div>
+
+          <!-- password -->
+          <div class="setting">
+            <div class="checkbox-and-label">
+              <input
+                type="checkbox"
+                id="password-toggle"
+                onclick="togglePassword()"
+              />
+              <label for="password-toggle">Password</label>
+            </div>
+            <input
+              type="password"
+              id="password-input"
+              name="password"
+              placeholder="********"
+              class="hidden"
+            />
+            <div id="error-message-password" class="error-message"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div id="success-modal" class="modal-overlay">
+      <div class="modal-content">
+        <h2>Success!</h2>
+        <p id="success-message"></p>
+        <div class="shortlink-container">
+          <span class="shortlink" id="shortlinkText"></span>
+        </div>
+        <div id="success-tip"></div>
+      </div>
+    </div>
+
+    <a
+      href="https://github.com/ivov/n8n-shortlink"
+      class="github-icon"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img src="/static/img/github.svg" alt="GitHub" width="32" height="32" />
+    </a>
+
+    <script src="/static/js/index.js"></script>
+    <script
+      src="/static/js/confetti.js"
+      async
+      defer
+    ></script>
+  </body>
+</html>

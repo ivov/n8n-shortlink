@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['prometheus:9090']
+
+  - job_name: n8n_shortlink
+    static_configs:
+      - targets: ['n8n-shortlink:3001']
+
+  - job_name: node_exporter
+    static_configs:
+      - targets: ['node_exporter:9100']
+
+  - job_name: cadvisor
+    static_configs:
+      - targets: ['cadvisor:8080']

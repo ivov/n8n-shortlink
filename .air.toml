@@ -1,0 +1,37 @@
+# ref: https://github.com/air-verse/air/blob/master/air_example.toml
+
+root = "."
+tmp_dir = "bin/tmp"
+
+[build]
+  bin = "bin/tmp/main"
+  cmd = "go build -o ./bin/tmp cmd/server/main.go"
+  delay = 0
+  exclude_dir = [".github", ".vscode", "bin", "deploy", "docs"]
+  exclude_regex = ["_test\\.go"]
+  exclude_unchanged = false
+  follow_symlink = false
+  include_dir = ["internal"]
+  kill_delay = 0
+  log = "air.log"
+  rerun = false
+  rerun_delay = 500
+  send_interrupt = true
+  stop_on_error = true
+
+[color]
+  build = "yellow"
+  main = "magenta"
+  runner = "green"
+  watcher = "cyan"
+
+[log]
+  main_only = false
+  time = true
+
+[misc]
+  clean_on_exit = true
+
+[screen]
+  clear_on_rebuild = false
+  keep_scroll = true

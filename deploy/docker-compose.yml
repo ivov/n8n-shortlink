@@ -1,0 +1,35 @@
+version: '3.8'
+name: n8n-shortlink
+services:
+  n8n-shortlink: 
+    image: ghcr.io/ivov/n8n-shortlink:latest
+    container_name: n8n-shortlink
+    profiles: ["production"]
+    ports:
+      - 3001:3001
+    env_file:
+      - .env.production
+    volumes:
+      - ${HOME}/.n8n-shortlink:/root/.n8n-shortlink
+    restart: unless-stopped
+    networks:
+      - n8n-shortlink-network
+
+  n8n-shortlink-local:
+    image: n8n-shortlink:local
+    container_name: n8n-shortlink
+    profiles: ["local"]
+    ports:
+      - 3001:3001
+    env_file:
+      - .env.local
+    volumes:
+      - ${HOME}/.n8n-shortlink:/root/.n8n-shortlink
+    restart: unless-stopped
+    networks:
+      - n8n-shortlink-network
+
+networks:
+  n8n-shortlink-network:
+    name: n8n-shortlink-network
+    external: true

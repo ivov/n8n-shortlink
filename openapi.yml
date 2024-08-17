@@ -1,0 +1,205 @@
+openapi: "3.0.0"
+info:
+  title: Shortlink API
+  description: API for creating and visiting shortlinks for n8n workflows and URLs 
+  version: 1.0.0
+servers:
+  - url: https://n8n.to
+paths:
+  /shortlink:
+    post:
+      summary: Create a new shortlink
+      description: Creates a new shortlink for an n8n workflow or URL
+      operationId: createShortlink
+      tags:
+        - Shortlinks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortlinkCreationRequest'
+      responses:
+        '201':
+          description: Shortlink created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortlinkCreationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{slug}:
+    get:
+      summary: Resolve a shortlink
+      description: Returns a workflow JSON and redirects to a URL. Basic auth required for password-protected shortlinks.
+      operationId: resolveShortlink
+      tags:
+        - Shortlinks
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: Base64-encoded password for protected shortlinks (Basic Auth)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response for workflow shortlink
+          content:
+            application/json:
+              schema:
+                type: object
+        '301':
+          description: Redirect for URL shortlink
+          headers:
+            Location:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /spec:
+    get:
+      summary: OpenAPI specification
+      description: Returns the OpenAPI specification in YAML format.
+      operationId: getApiSpec
+      tags:
+        - System
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/yaml:
+              schema:
+                type: string
+  /health:
+    get:
+      summary: Get API health status
+      description: Returns the current API health status. 
+      operationId: getHealth
+      tags:
+        - System
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:    
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  environment:
+                    type: string
+                    enum: [development, production, testing]
+                    example: production
+                  version:
+                    type: string
+                    example: f0f13a2
+                    description: Git commit SHA
+  /metrics:
+    get:
+      summary: Get API metrics
+      description: Returns Prometheus-formatted metrics about API performance.
+      operationId: getMetrics
+      tags:
+        - System
+      responses:
+        '200':
+          description: Successful response
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  schemas:
+    ShortlinkCreationRequest:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          description: Workflow JSON or URL to shorten
+        slug:
+          type: string
+          description: Custom slug for the shortlink (optional). If not provided, a random slug will be generated.
+        password:
+          type: string
+          description: Password to protect the shortlink with (optional)
+    ShortlinkCreationResponse:
+      type: object
+      properties:
+        slug:
+          type: string
+          description: Generated or custom slug for the shortlink
+        kind:
+          type: string
+          enum: [url, workflow]
+          description: Kind of content that was shortened
+        content:
+          type: string
+          description: Workflow JSON or URL that was shortened
+        creatorIP:
+          type: string
+          description: IP address of the shortlink creator
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+            code:
+              type: string
+            doc:
+              type: string
+            trace:
+              type: string
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

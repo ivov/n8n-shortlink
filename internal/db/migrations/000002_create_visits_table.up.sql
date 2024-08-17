@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS visits (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	slug TEXT REFERENCES shortlinks(slug),
+	ts TEXT DEFAULT CURRENT_TIMESTAMP,
+	referer TEXT,
+	user_agent TEXT
+) STRICT;
+
+CREATE INDEX IF NOT EXISTS idx_visits_slug_ts ON visits(slug, ts);

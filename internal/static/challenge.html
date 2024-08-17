@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/static/img/favicon.ico" />
+    <title>n8n shortlinks</title>
+    <link rel="stylesheet" href="/static/styles/index.css" />
+    <link rel="stylesheet" href="/static/styles/challenge.css" />
+  </head>
+
+  <body>
+    <noscript>
+      <p>This application requires JavaScript.</p>
+    </noscript>
+    <div class="overlay"></div>
+
+    <div id="challenge-modal" class="modal-overlay">
+      <div class="modal-content">
+        <h2>Password required!</h2>
+        <div class="password-input-container">
+          <input
+            type="password"
+            id="required-password-input"
+            name="required-password"
+            placeholder="********"
+          />
+          <div class="password-tip">Enter password to access shortlink</div>
+          <div class="invalid-password">Invalid password. Try again!</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/js/challenge.js"></script>
+  </body>
+</html>

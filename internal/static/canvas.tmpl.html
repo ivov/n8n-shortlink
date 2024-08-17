@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>n8n workflow: {{ .WorkflowSlug }}</title>
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@n8n_io/n8n-demo-component/n8n-demo.bundled.js"
+    ></script>
+    <link rel="icon" type="image/png" href="/static/img/favicon.ico" />
+    <style>
+      body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+      }
+      n8n-demo {
+        width: 100%;
+        --n8n-workflow-min-height: 100vh;
+      }
+      /* #share-button button {
+        background-color: #1da1f2;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      #share-button button:hover {
+        background-color: #1991da;
+      } */
+    </style>
+    <!-- <script>
+      function shareToTwitter() {
+        const slug = "{{ .WorkflowSlug }}";
+        const shortlink = `https://n8n.to/${slug}`;
+        const tweetText = encodeURIComponent('Check out this n8n workflow!');
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}&url=${shortlink}`;
+        window.open(twitterUrl, "_blank");
+      }
+    </script> -->
+  </head>
+  <body>
+    <!-- <div
+      id="share-button"
+      style="position: absolute; top: 10px; right: 10px; z-index: 1000"
+    >
+      <button onclick="shareToTwitter()">Share to X</button>
+    </div> -->
+    <n8n-demo
+      workflow="{{.Workflow}}"
+      frame="false"
+      hidecanvaserrors="true"
+      insideIframe="true"
+    ></n8n-demo>
+  </body>
+</html>
