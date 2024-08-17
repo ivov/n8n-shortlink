@@ -24,7 +24,6 @@ Deployment stack:
 - Error tracking with Sentry
 - Backups with AWS S3 + cronjob
 - Bash scripts to automate VPS setup
-- Uptime monitoring with UptimeRobot
 - Releases with GitHub Actions, GHCR, Docker
 
 ## Docs
