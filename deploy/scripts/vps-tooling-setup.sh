@@ -28,7 +28,9 @@ sudo usermod --append --groups docker ${USER}
 
 echo "Docker installed and running as systemd service"
 
-sudo apt install -y docker-compose
+# sudo apt install -y docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
 echo "docker-compose installed"
 
