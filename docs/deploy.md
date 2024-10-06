@@ -109,3 +109,7 @@ deploy/scripts/start-services.sh
 ```
 
 Log in to `https://grafana.domain.com` and set a password for the Grafana admin user.
+
+## TODOs
+
+- [ ] Introduce shellcheck
