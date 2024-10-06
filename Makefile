@@ -130,3 +130,22 @@ docker/stop:
 docker/connect:
 	docker exec -it n8n-shortlink sh
 .PHONY: docker/connect
+
+# ------------
+#     vps
+# ------------
+
+## vps/login: Log in to VPS
+vps/login:
+	ssh shortlink_vps
+.PHONY: vps/login
+
+## vps/caddy/logs: Tail Caddy logs
+vps/caddy/logs:
+	ssh shortlink_vps 'journalctl -u caddy -f'
+.PHONY: vps/caddy/logs
+
+## vps/logs/app: Tail app container logs
+vps/app/logs:
+	ssh shortlink_vps 'docker logs -f n8n-shortlink'
+.PHONY: vps/app/logs
