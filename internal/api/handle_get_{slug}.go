@@ -6,14 +6,13 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/ivov/n8n-shortlink/internal"
 	"github.com/ivov/n8n-shortlink/internal/errors"
 )
 
 // HandleGetSlug handles a GET /{slug} request by resolving a regular shortlink.
 func (api *API) HandleGetSlug(w http.ResponseWriter, r *http.Request) {
-	slug := chi.URLParam(r, "slug")
+	slug := r.PathValue("slug")
 
 	shortlink, err := api.ShortlinkService.GetBySlug(slug)
 	if err != nil {

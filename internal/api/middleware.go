@@ -1,6 +1,8 @@
 package api
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"expvar"
 	"fmt"
 	"net/http"
@@ -10,25 +12,86 @@ import (
 	"time"
 
 	"github.com/felixge/httpsnoop"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/ivov/n8n-shortlink/internal/log"
 	"github.com/tomasen/realip"
 	"golang.org/x/time/rate"
 )
 
+// ------------
+//    setup
+// ------------
+
+// MiddlewareFn is a function that wraps an http.Handler.
+type MiddlewareFn func(http.Handler) http.Handler
+
+func createStack(fns ...MiddlewareFn) MiddlewareFn {
+	return func(next http.Handler) http.Handler {
+		for _, fn := range fns {
+			next = fn(next)
+		}
+		return next
+	}
+}
+
 // SetupMiddleware sets up all middleware on the API.
-func (api *API) SetupMiddleware(r *chi.Mux) {
-	r.Use(api.recoverPanic)
-	r.Use(middleware.RequestID)
-	r.Use(middleware.CleanPath)
-	r.Use(middleware.StripSlashes)
-	r.Use(api.addRelaxedCorsHeaders)
-	r.Use(api.addSecurityHeaders)
-	r.Use(api.addCacheHeadersForStaticFiles)
-	r.Use(api.rateLimit)
-	r.Use(api.logRequest)
-	r.Use(api.metrics)
+func (api *API) SetupMiddleware() MiddlewareFn {
+	return createStack(
+		api.setRequestID,
+		api.logRequest,
+		api.recoverPanic,
+		api.addRelaxedCorsHeaders,
+		api.addSecurityHeaders,
+		api.addCacheHeadersForStaticFiles,
+		api.rateLimit,
+		api.metrics,
+	)
+}
+
+// ------------
+//   headers
+// ------------
+
+func (api *API) setRequestID(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := r.Header.Get("X-Request-ID")
+		if id == "" {
+			id = generateRequestID()
+			r.Header.Set("X-Request-ID", id)
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func generateRequestID() string {
+	bytes := make([]byte, 16) // 128 bits
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "unknown"
+	}
+	return hex.EncodeToString(bytes)
+}
+
+func (api *API) addRelaxedCorsHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Referer, User-Agent")
+
+			next.ServeHTTP(w, r)
+		},
+	)
+}
+
+func (api *API) addSecurityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		w.Header().Set("Strict-Transport-Security", "max-age=31536000")
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func (api *API) addCacheHeadersForStaticFiles(next http.Handler) http.Handler {
@@ -39,6 +102,10 @@ func (api *API) addCacheHeadersForStaticFiles(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+// ------------
+//   metrics
+// ------------
 
 func (api *API) metrics(next http.Handler) http.Handler {
 	totalRequestsReceived := expvar.NewInt("total_requests_received")
@@ -57,16 +124,9 @@ func (api *API) metrics(next http.Handler) http.Handler {
 	})
 }
 
-func (api *API) addSecurityHeaders(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("X-Frame-Options", "DENY")
-		w.Header().Set("X-Content-Type-Options", "nosniff")
-		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
-		w.Header().Set("Strict-Transport-Security", "max-age=31536000")
-
-		next.ServeHTTP(w, r)
-	})
-}
+// ------------
+//   recover
+// ------------
 
 func (api *API) recoverPanic(next http.Handler) http.Handler {
 	return http.HandlerFunc(
@@ -82,6 +142,27 @@ func (api *API) recoverPanic(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 		},
 	)
+}
+
+// ------------
+//   logging
+// ------------
+
+type wrappedResponseWriter struct {
+	http.ResponseWriter
+	statusCode   int
+	bytesWritten int
+}
+
+func (rw *wrappedResponseWriter) WriteHeader(statusCode int) {
+	rw.ResponseWriter.WriteHeader(statusCode)
+	rw.statusCode = statusCode
+}
+
+func (rw *wrappedResponseWriter) Write(b []byte) (int, error) {
+	bytes, err := rw.ResponseWriter.Write(b)
+	rw.bytesWritten += bytes
+	return bytes, err
 }
 
 func isLogIgnored(path string) bool {
@@ -101,7 +182,7 @@ func (api *API) logRequest(next http.Handler) http.Handler {
 				return
 			}
 
-			wrappedWriter := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
+			wrappedWriter := &wrappedResponseWriter{ResponseWriter: w, statusCode: http.StatusOK}
 
 			start := time.Now()
 
@@ -121,9 +202,9 @@ func (api *API) logRequest(next http.Handler) http.Handler {
 					Path:        r.URL.Path,
 					QueryString: r.URL.Query().Encode(),
 					Latency:     int(time.Duration(time.Since(start).Milliseconds())),
-					Status:      wrappedWriter.Status(),
-					SizeBytes:   wrappedWriter.BytesWritten(),
-					RequestID:   middleware.GetReqID(r.Context()),
+					Status:      wrappedWriter.statusCode,
+					SizeBytes:   wrappedWriter.bytesWritten,
+					RequestID:   r.Header.Get("X-Request-ID"),
 				}
 
 				api.Logger.Info(
@@ -144,17 +225,9 @@ func (api *API) logRequest(next http.Handler) http.Handler {
 	)
 }
 
-func (api *API) addRelaxedCorsHeaders(next http.Handler) http.Handler {
-	return http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Referer, User-Agent")
-
-			next.ServeHTTP(w, r)
-		},
-	)
-}
+// ------------
+//   r-limit
+// ------------
 
 var exemptedFromRateLimiting = []string{"/", "/docs"}
 

@@ -222,7 +222,7 @@ func TestAPI(t *testing.T) {
 			assert.Contains(t, string(body), "total_responses_sent")
 			assert.Contains(t, string(body), "in_flight_requests")
 			assert.Contains(t, string(body), "total_processing_time_ms")
-			assert.Contains(t, string(body), "responses_sent_by_status")
+			assert.Contains(t, string(body), "total_responses_sent_by_status")
 		})
 	})
 
@@ -231,7 +231,6 @@ func TestAPI(t *testing.T) {
 	// ------------------------
 
 	t.Run("base use cases", func(t *testing.T) {
-
 		t.Run("should create URL shortlink and redirect on retrieval", func(t *testing.T) {
 			candidate := entities.Shortlink{
 				Kind:    "url",
@@ -341,7 +340,6 @@ func TestAPI(t *testing.T) {
 	// ------------------------
 
 	t.Run("custom slug", func(t *testing.T) {
-
 		t.Run("should create custom-slug shortlink and redirect on retrieval", func(t *testing.T) {
 			candidate := entities.Shortlink{
 				Slug:    "my-custom-slug",
@@ -369,7 +367,6 @@ func TestAPI(t *testing.T) {
 	// ------------------------
 
 	t.Run("creation payload validation", func(t *testing.T) {
-
 		t.Run("should reject on invalid creation payload", func(t *testing.T) {
 			testCases := []struct {
 				name               string
@@ -510,7 +507,6 @@ func TestAPI(t *testing.T) {
 	})
 
 	t.Run("rate limiting", func(t *testing.T) {
-
 		t.Run("should enforce rate limiting", func(t *testing.T) {
 			// enable rate limiting only for this test
 			originalConfig := *api.Config
@@ -559,7 +555,6 @@ func TestAPI(t *testing.T) {
 	})
 
 	t.Run("password protection", func(t *testing.T) {
-
 		t.Run("should store password-protected shortlink", func(t *testing.T) {
 			candidate := entities.Shortlink{
 				Kind:     "url",
