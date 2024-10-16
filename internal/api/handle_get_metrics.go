@@ -40,7 +40,7 @@ var (
 	})
 	responsesSentByStatus = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "responses_sent_by_status",
+			Name: "total_responses_sent_by_status",
 			Help: "Total responses sent by HTTP status code",
 		},
 		[]string{"status"},

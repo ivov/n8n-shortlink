@@ -5,7 +5,6 @@ go 1.22.5
 require (
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/getsentry/sentry-go v0.28.1
-	github.com/go-chi/chi/v5 v5.1.0
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/mattn/go-sqlite3 v1.14.22
