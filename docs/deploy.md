@@ -112,4 +112,7 @@ Log in to `https://grafana.domain.com` and set a password for the Grafana admin 
 
 ## TODOs
 
-- [ ] Introduce shellcheck
+- [ ] Shellcheck
+- [ ] Terraform
+- [ ] Watchtower
+
