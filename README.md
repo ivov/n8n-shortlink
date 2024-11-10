@@ -17,7 +17,8 @@ Features:
 
 Deployment stack:
 
-- Metrics with expvar, Prometheus, node exporter, cAdvisor
+- Provisioning with Terraform
+- Metrics with Prometheus
 - Logging with zap, Promtail, Loki
 - Monitoring with Grafana
 - Caddy as reverse proxy
@@ -28,6 +29,7 @@ Deployment stack:
 
 ## Docs
 
+- [`provision.md`](docs/provision.md)
 - [`develop.md`](docs/develop.md)
 - [`release.md`](docs/release.md)
 - [`deploy.md`](docs/deploy.md)
