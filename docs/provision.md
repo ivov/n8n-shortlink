@@ -33,8 +33,9 @@ ssh-keygen -t ed25519 -C "my@email.com" -f ~/.ssh/id_ed25519_shortlink_via_terra
 - `tf_automation_aws_access_key_id`: Access key ID for `terraform-automation` IAM user. Mark as sensitive.
 - `tf_automation_aws_secret_access_key`. Secret access key for `terraform-automation` IAM user. Mark as sensitive.
 
-```jsonc
-// n8n-shortlink-terraform-automation-policy
+Policy: `n8n-shortlink-terraform-automation-policy`
+
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -66,9 +67,11 @@ ssh-keygen -t ed25519 -C "my@email.com" -f ~/.ssh/id_ed25519_shortlink_via_terra
 2. Initialize Terraform:
 
    ```sh
-   cd infra/provision
+   cd infrastructure/01-provision
    terraform init
    ```
+
+   This will create an untracked `.terraform` dir, which caches provider plugins and modules; this dir also contains `terraform.tfstate` and `environment` files to record, respectively, the remote state backend configuration and workspace tracking in HCP Terraform. The state itself is stored remotely in the HCP Terraform workspace. This operation will also create a version-controlled `.terraform.lock.hcl` file, which records the exact version of provider plugins and modules.
 
 3. Plan and apply:
 
