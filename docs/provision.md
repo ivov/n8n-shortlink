@@ -28,7 +28,7 @@ ssh-keygen -t ed25519 -C "my@email.com" -f ~/.ssh/id_ed25519_shortlink_via_terra
 - `hcloud_token`: API token from step 3. Mark as sensitive.
 - `allowed_ssh_ips`: `["your-ip-address"]`, i.e. string array in CIDR notation. Mark as sensitive and _as HCL-type variable_.
 
-5. Sign up for [AWS](https://aws.amazon.com/console/), create an IAM policy `n8n-shortlink-terraform-automation-policy`, create an IAM user `n8n-shortlink-terraform-automation-user` (disallow AWS Management Console access) attaching the policy to this user, generate access keys for this user (select "Third-party service") and store them in HCP Terraform:
+5. Sign up for [AWS](https://aws.amazon.com/console/), create an IAM policy `n8n-shortlink-terraform-automation-policy` (see content below), create an IAM user `n8n-shortlink-terraform-automation-user` (disallow AWS Management Console access) attaching the policy to this user, generate access keys for this user (select "Third-party service") and store them in HCP Terraform:
 
 - `tf_automation_aws_access_key_id`: Access key ID for `terraform-automation` IAM user. Mark as sensitive.
 - `tf_automation_aws_secret_access_key`. Secret access key for `terraform-automation` IAM user. Mark as sensitive.
