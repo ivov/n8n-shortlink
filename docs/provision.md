@@ -80,7 +80,7 @@ Policy: `n8n-shortlink-terraform-automation-policy`
    terraform apply
    ```
 
-4. Note down IP address and retrieve credentials from state:
+4. Note down IP address and retrieve AWS S3 credentials from state:
 
    ```sh
     Outputs:
