@@ -42,17 +42,17 @@ Policy: `n8n-shortlink-terraform-automation-policy`
     {
       "Effect": "Allow",
       "Action": "iam:*",
-      "Resource": "arn:aws:iam::*:user/n8n-shortlink-terraform-backup-user",
+      "Resource": "arn:aws:iam::*:user/n8n-shortlink-terraform-backup-user"
     },
     {
       "Effect": "Allow",
       "Action": "s3:*",
       "Resource": [
         "arn:aws:s3:::n8n-shortlink-terraform-backup-bucket",
-        "arn:aws:s3:::n8n-shortlink-terraform-backup-bucket/*",
-      ],
-    },
-  ],
+        "arn:aws:s3:::n8n-shortlink-terraform-backup-bucket/*"
+      ]
+    }
+  ]
 }
 ```
 
@@ -80,7 +80,9 @@ Policy: `n8n-shortlink-terraform-automation-policy`
    terraform apply
    ```
 
-4. Note down IP address and retrieve AWS S3 credentials from state:
+   Note: If you need to apply a single module: `terraform apply -target="module.server"`
+
+4. Receive server's IP address. Retrieve AWS S3 credentials from state:
 
    ```sh
     Outputs:
