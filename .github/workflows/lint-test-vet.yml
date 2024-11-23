@@ -1,7 +1,6 @@
 name: Lint, test, vet
 
-on:
-  push:
+on: push
 
 jobs:
   checks:
