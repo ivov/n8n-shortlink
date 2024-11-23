@@ -8,22 +8,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
-      - name: Build Docker image
-        run: docker build --tag n8n-shortlink:ci .
+      - name: Build test Docker image
+        run: docker build --tag n8n-shortlink:test .
 
-      # TODO: Replace `sleep 10`
-      - name: Run Docker container
+      - name: Run Docker container until health check
         run: |
-          docker run --detach --publish 3001:3001 --name n8n-shortlink-ci n8n-shortlink:ci
-          sleep 10 # wait for container to start up
-
-      - name: Check health endpoint
-        run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/health)
-          if [ $response -eq 200 ]; then
-            echo "Health check passed"
-            exit 0
-          else
-            echo "Health check failed with status code: $response"
-            exit 1
-          fi
+          docker run --detach --publish 3001:3001 --name test-container n8n-shortlink:test
+          timeout 20 bash -c 'until curl -s http://localhost:3001/health > /dev/null; do sleep 1; done'
