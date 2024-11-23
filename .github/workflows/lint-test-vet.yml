@@ -1,0 +1,27 @@
+name: Lint, test, vet
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4.2.2
+
+    - uses: actions/setup-go@v5.1.0
+      with:
+        go-version: 1.23.3
+
+    - name: Lint
+      uses: golangci/golangci-lint-action@v6.1.1
+      with:
+        version: latest
+
+    - name: Format check
+      run: go fmt ./...
+
+    - name: Static analysis
+      run: go vet ./...

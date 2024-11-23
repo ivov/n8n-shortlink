@@ -21,6 +21,12 @@ live:
 	air
 .PHONY: live
 
+lint:
+	golangci-lint run
+
+lintfix:
+	golangci-lint run --fix
+
 # ------------
 #    audit
 # ------------

@@ -22,20 +22,20 @@ func (api *API) HandleGetProtectedSlug(w http.ResponseWriter, r *http.Request, s
 	}
 
 	if !strings.HasPrefix(authHeader, "Basic ") {
-		api.Unauthorized(errors.ErrAuthHeaderMalformed, "MALFORMED_AUTHORIZATION_HEADER", w)
+		api.Unauthorized(errors.ErrAuthHeaderMalformed, w)
 		return
 	}
 
 	encodedPassword := strings.TrimPrefix(authHeader, "Basic ")
 	decodedBytes, err := base64.StdEncoding.DecodeString(encodedPassword)
 	if err != nil {
-		api.Unauthorized(errors.ErrAuthHeaderMalformed, "MALFORMED_AUTHORIZATION_HEADER", w)
+		api.Unauthorized(errors.ErrAuthHeaderMalformed, w)
 		return
 	}
 
 	decodedPassword := string(decodedBytes)
 	if !api.ShortlinkService.VerifyPassword(shortlink.Password, decodedPassword) {
-		api.Unauthorized(errors.ErrPasswordInvalid, "INVALID_PASSWORD", w)
+		api.Unauthorized(errors.ErrPasswordInvalid, w)
 		return
 	}
 
@@ -49,10 +49,15 @@ func (api *API) HandleGetProtectedSlug(w http.ResponseWriter, r *http.Request, s
 	switch shortlink.Kind {
 	case "workflow":
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(shortlink.Content))
+		if _, err := w.Write([]byte(shortlink.Content)); err != nil {
+			api.Logger.Error(err)
+		}
 	case "url":
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"url": shortlink.Content})
+		if err := json.NewEncoder(w).Encode(map[string]string{"url": shortlink.Content}); err != nil {
+			api.Logger.Error(err)
+			api.InternalServerError(err, w)
+		}
 	default:
 		api.BadRequest(errors.ErrKindUnsupported, w)
 	}

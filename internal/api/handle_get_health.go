@@ -6,7 +6,7 @@ import (
 )
 
 // HandleGetHealth returns the health status of the API.
-func (api *API) HandleGetHealth(w http.ResponseWriter, r *http.Request) {
+func (api *API) HandleGetHealth(w http.ResponseWriter, _ *http.Request) {
 	health := fmt.Sprintf(
 		`{"status": "ok", "environment": %q, "version": %q}`,
 		api.Config.Env,
@@ -14,5 +14,8 @@ func (api *API) HandleGetHealth(w http.ResponseWriter, r *http.Request) {
 	)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(health))
+
+	if _, err := w.Write([]byte(health)); err != nil {
+		api.Logger.Error(err)
+	}
 }

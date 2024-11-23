@@ -1,6 +1,6 @@
 module github.com/ivov/n8n-shortlink
 
-go 1.22.5
+go 1.23.3
 
 require (
 	github.com/felixge/httpsnoop v1.0.4

@@ -17,7 +17,9 @@ func (api *API) jsonResponse(w http.ResponseWriter, status int, payload interfac
 
 	w.WriteHeader(status)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(json)
+	if _, err := w.Write(json); err != nil {
+		api.Logger.Error(err)
+	}
 }
 
 // CreatedSuccesfully responds with a 201.
@@ -88,7 +90,7 @@ func (api *API) RateLimitExceeded(w http.ResponseWriter, ip string) {
 }
 
 // Unauthorized responds with a 401.
-func (api *API) Unauthorized(err error, code string, w http.ResponseWriter) {
+func (api *API) Unauthorized(err error, w http.ResponseWriter) {
 	payload := ErrorResponse{
 		Error: ErrorField{
 			Message: "Missing valid authentication credentials.",

@@ -26,8 +26,6 @@ var (
 	buildTime string
 )
 
-var startTime = time.Now()
-
 func main() {
 	cfg := config.NewConfig(commitSha)
 
