@@ -6,9 +6,8 @@
 set -euo pipefail
 
 required_env_vars=(
-  "APP_DIR"
-  "BACKUP_DIR"
   "APP_DB" 
+  "BACKUP_DIR"
   "BACKUP_ENCRYPTION_KEY"
   "BUCKET_NAME"
 )

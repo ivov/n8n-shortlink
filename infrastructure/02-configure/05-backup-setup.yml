@@ -3,6 +3,7 @@
   hosts: all
   become: yes # enable sudo
   vars:
+    app_db: "{{ app_dir }}/n8n-shortlink.sqlite"
     aws_data: "{{ lookup('file', 'tf-output-aws.json') | from_json }}"
     backup_dir: "{{ app_dir }}/backup"
     backup_encryption_key: "{{ backup_dir }}/n8n-shortlink-backup-encryption.key"
@@ -125,7 +126,7 @@
         minute: "30"
         user: "{{ ansible_user }}"
         job: >
-          APP_DIR="{{ app_dir }}"
+          APP_DB="{{ app_db }}" 
           BACKUP_DIR="{{ backup_dir }}"
           BACKUP_ENCRYPTION_KEY="{{ backup_encryption_key }}"
           BUCKET_NAME="{{ bucket_name }}"
