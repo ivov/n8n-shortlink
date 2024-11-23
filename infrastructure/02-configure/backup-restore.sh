@@ -11,13 +11,16 @@ APP_DIR="$HOME/.n8n-shortlink"
 BACKUP_DIR="$APP_DIR/backup"
 BACKUP_ENCRYPTION_KEY="$BACKUP_DIR/n8n-shortlink-backup-encryption.key"
 BACKUP_LOG_FILE="$BACKUP_DIR/backup.log"
+RESTORED_DB="$BACKUP_DIR/restored.sqlite"
 
 BUCKET_NAME=$(grep bucket_name ~/.aws/config | cut -d '=' -f2 | tr -d ' ')
-BUCKET_PREFIX=$(grep bucket_prefix ~/.aws/config | cut -d '=' -f2 | tr -d ' ')
+if [ -z "$BUCKET_NAME" ]; then
+  echo "Error: Bucket name not found in ~/.aws/config"
+  exit 1
+fi
 
-RESTORED_DB="$BACKUP_DIR/restored.sqlite"
 BACKUP_NAME="$1"
-BUCKET_URI="s3://$BUCKET_NAME/$BUCKET_PREFIX/$BACKUP_NAME"
+BUCKET_URI="s3://$BUCKET_NAME/$BACKUP_NAME"
 
 bold='\033[1m'
 unbold='\033[0m'
@@ -43,4 +46,5 @@ fi
 rm -f "./$BACKUP_NAME"
 
 echo -e "Backup ${bold}$BACKUP_NAME${unbold} restored as ${bold}$RESTORED_DB${unbold}"
-echo -e "To use this backup, rename it to ${bold}.n8n-shortlink/n8n-shortlink.sqlite${unbold}"
+echo -e "To replace the current DB with the restored DB, run the following command:"
+echo -e "${bold}mv $RESTORED_DB $APP_DIR/n8n-shortlink.sqlite${unbold}"

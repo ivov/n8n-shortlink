@@ -9,7 +9,6 @@
     backup_credentials: "{{ aws_data.credentials }}"
     bucket_name: "{{ aws_data.bucket_name }}"
     bucket_region: "{{ aws_data.bucket_region }}"
-    bucket_prefix: n8n-shortlink-infra-backups
 
   tasks:
     # ==================================
@@ -73,13 +72,12 @@
     - name: Set AWS config details
       copy:
         dest: "{{ ansible_user_dir }}/.aws/config"
-        # `bucket_name` and `bucket_prefix` are added only for use by bash scripts, not supported by awscli
+        # `bucket_name` is added only for use by bash scripts, not supported by awscli
         content: |
           [default]
           region = {{ bucket_region }}
           output = json
           bucket_name = {{ bucket_name }}
-          bucket_prefix = {{ bucket_prefix }}
         mode: "0600"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
@@ -99,21 +97,6 @@
       register: s3_check
       failed_when: s3_check.rc != 0
       changed_when: false
-
-    # ==================================
-    #       backup configuration
-    # ==================================
-
-    # backup-config is needed for `backup-list.sh` and `backup-restore.sh`. To improve in future. 
-    # - name: Create backup config file
-    #   copy:
-    #     dest: "{{ backup_dir }}/backup-config"
-    #     content: |
-    #       BUCKET_NAME="{{ backup_config.bucket_name }}"
-    #       BUCKET_REGION="{{ backup_config.bucket_region }}"
-    #     mode: "0600"
-    #     owner: "{{ ansible_user }}"
-    #     group: "{{ ansible_user }}"
 
     # ==================================
     #         backup scripts
@@ -146,5 +129,4 @@
           BACKUP_DIR="{{ backup_dir }}"
           BACKUP_ENCRYPTION_KEY="{{ backup_encryption_key }}"
           BUCKET_NAME="{{ bucket_name }}"
-          BUCKET_PREFIX="{{ bucket_prefix }}"
           {{ backup_dir }}/backup-run.sh

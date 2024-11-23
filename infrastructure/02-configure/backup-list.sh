@@ -2,15 +2,12 @@
 
 # List sqlite DB backups at AWS S3: ./backup-list.sh
 
-BACKUP_CONFIG="$HOME/.n8n-shortlink/backup/backup-config"
+BUCKET_NAME=$(grep bucket_name ~/.aws/config | cut -d '=' -f2 | tr -d ' ')
 
-if [ ! -f "$BACKUP_CONFIG" ]; then
-  echo "Error: Backup config $BACKUP_CONFIG not found."
+if [ -z "$BUCKET_NAME" ]; then
+  echo "Error: Bucket name not found in ~/.aws/config"
   exit 1
 fi
-
-BUCKET_NAME=$(grep bucket_name ~/.aws/config | cut -d '=' -f2 | tr -d ' ')
-BUCKET_PREFIX=$(grep bucket_prefix ~/.aws/config | cut -d '=' -f2 | tr -d ' ')
 
 human_readable_size() {
   local size=$1
@@ -25,7 +22,7 @@ human_readable_size() {
   printf "%.2f %s" $size "${units[$unit]}"
 }
 
-aws s3 ls "s3://$BUCKET_NAME/$BUCKET_PREFIX/" | sort -r | while read -r line; do
+aws s3 ls "s3://$BUCKET_NAME/" | sort -r | while read -r line; do
   date=$(echo $line | awk '{print $1}')
   time=$(echo $line | awk '{print $2}')
   size=$(echo $line | awk '{print $3}')
@@ -33,7 +30,5 @@ aws s3 ls "s3://$BUCKET_NAME/$BUCKET_PREFIX/" | sort -r | while read -r line; do
 
   hr_size=$(human_readable_size $size)
 
-  short_filename=${filename#$BUCKET_PREFIX} # remove prefix
-
-  printf "%-12s %-12s %-12s %s\n" "$date" "$time" "$hr_size" "$short_filename"
+  printf "%-12s %-12s %-12s %s\n" "$date" "$time" "$hr_size" "$filename"
 done

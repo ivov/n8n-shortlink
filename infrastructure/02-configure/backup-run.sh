@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Back up sqlite DB to AWS S3: ./backup-run.sh
+# Intended to be run as a cron job.
 
 set -euo pipefail
 
@@ -10,7 +11,6 @@ required_env_vars=(
   "APP_DB" 
   "BACKUP_ENCRYPTION_KEY"
   "BUCKET_NAME"
-  "BUCKET_PREFIX"
 )
 
 for var in "${required_env_vars[@]}"; do
@@ -23,10 +23,14 @@ done
 PLAINTEXT_BACKUP_NAME="$(date +%Y-%m-%d-%H:%M:%S%z).sql.gz"
 ENCRYPTED_BACKUP_NAME="$PLAINTEXT_BACKUP_NAME.enc"
 BACKUP_LOG_FILE="$BACKUP_DIR/backup.log"
-BUCKET_URI="s3://$BUCKET_NAME/$BUCKET_PREFIX/$BACKUP_NAME"
+BUCKET_URI="s3://$BUCKET_NAME/$ENCRYPTED_BACKUP_NAME"
 TEMP_DIR=$(mktemp -d)
 
 trap 'rm -rf "$TEMP_DIR"' EXIT
+
+log_message() {
+  echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$BACKUP_LOG_FILE"
+}
 
 # ==================================
 #        compress + encrypt
@@ -50,11 +54,7 @@ fi
 #             upload
 # ==================================
 
-log_message() {
-  echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$BACKUP_LOG_FILE"
-}
-
-UPLOAD_OUTPUT=$(aws s3 cp "./$ENCRYPTED_BACKUP_NAME" $BUCKET_URI 2>&1)
+UPLOAD_OUTPUT=$(aws s3 cp "$TEMP_DIR/$ENCRYPTED_BACKUP_NAME" "$BUCKET_URI" 2>&1)
 EXIT_STATUS=$?
 if [ $EXIT_STATUS -eq 0 ]; then
   log_message "Backup uploaded: $ENCRYPTED_BACKUP_NAME"
