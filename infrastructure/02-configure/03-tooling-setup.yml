@@ -1,7 +1,7 @@
 ---
 - name: Set up tooling (caddy, docker, sqlite3)
   hosts: all
-  become: yes # enable sudo
+  become: yes # escalate to root
 
   tasks:
     # ==================================

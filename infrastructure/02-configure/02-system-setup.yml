@@ -1,7 +1,7 @@
 ---
 - name: Set up system (timezone, packages, unattended upgrades)
   hosts: all
-  become: yes # enable sudo
+  become: yes # escalate to root
 
   tasks:
     # ==================================

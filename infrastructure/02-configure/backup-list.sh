@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# List sqlite DB backups at AWS S3: ./backup-list.sh
+# List sqlite DB backups at AWS S3
+: '
+~/.n8n-shortlink/backup/backup-list.sh
+'
 
 BUCKET_NAME=$(grep bucket_name ~/.aws/config | cut -d '=' -f2 | tr -d ' ')
 

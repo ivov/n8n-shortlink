@@ -1,7 +1,7 @@
 ---
 - name: Set up non-root user
   hosts: all
-  become: yes # enable sudo
+  become: yes # escalate to root
   vars_prompt:
     - name: username
       prompt: Enter username

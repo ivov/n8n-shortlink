@@ -1,7 +1,13 @@
 #!/bin/bash
 
-# Back up sqlite DB to AWS S3: ./backup-run.sh
-# Intended to be run as a cron job.
+# Back up sqlite DB to AWS S3. Intended to be run as a cron job. Example manual run: 
+: '
+APP_DB=~/.n8n-shortlink/n8n-shortlink.sqlite \
+BACKUP_DIR=~/.n8n-shortlink/backup \
+BACKUP_ENCRYPTION_KEY=~/.n8n-shortlink/backup/n8n-shortlink-backup-encryption.key \
+BUCKET_NAME=n8n-shortlink-infra-backup-bucket \
+~/.n8n-shortlink/backup/backup-run.sh
+'
 
 set -euo pipefail
 

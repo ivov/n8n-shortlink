@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# Restore a sqlite DB backup from AWS S3: ./backup-restore.sh <backup_name>
+# Restore a sqlite DB backup from AWS S3: 
+: '
+~/.n8n-shortlink/backup/backup-restore.sh 2024-11-23-17:24:39+0100.sql.gz.enc
+'
 
 if [ $# -eq 0 ]; then
   echo -e "Error: No backup name provided.\nUsage: $0 <backup_name>\nExample: $0 2020-01-03-17:34:35+0200.sql.gz.enc"

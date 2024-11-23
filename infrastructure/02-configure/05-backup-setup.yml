@@ -1,8 +1,8 @@
 ---
 - name: Set up backups (sqlite DB to AWS S3)
   hosts: all
-  become: yes # enable sudo
   vars:
+    app_dir: "{{ ansible_user_dir }}/.n8n-shortlink"
     app_db: "{{ app_dir }}/n8n-shortlink.sqlite"
     aws_data: "{{ lookup('file', 'tf-output-aws.json') | from_json }}"
     backup_dir: "{{ app_dir }}/backup"
@@ -17,6 +17,7 @@
     # ==================================
 
     - name: Install required packages
+      become: yes # escalate to root
       apt:
         name:
           - awscli
@@ -64,6 +65,7 @@
       copy:
         dest: "{{ ansible_user_dir }}/.aws/credentials"
         content: |
+          [default]
           aws_access_key_id = {{ backup_credentials.access_key }}
           aws_secret_access_key = {{ backup_credentials.secret_key }}
         mode: "0600"
