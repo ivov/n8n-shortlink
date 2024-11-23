@@ -1,6 +1,6 @@
 .DS_Store
 bin/*
 !**/.gitkeep
-*.tfstate
-*.tfstate.*
 .terraform/
+tf-output-*.json
+hosts
