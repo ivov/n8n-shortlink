@@ -1,18 +1,14 @@
 # Development
 
-Install Go 1.23.3:
+Install tooling:
 
 ```sh
 brew install go@1.23.3
-```
-
-Install Go tooling:
-
-```sh
 go install gotest.tools/gotestsum@latest
 go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 go install github.com/air-verse/air@latest
 go install -tags 'sqlite3' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+brew install shellcheck
 ```
 
 Clone repository:
