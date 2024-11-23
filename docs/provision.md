@@ -91,11 +91,11 @@ Policy: `n8n-shortlink-infra-admin-policy`
    terraform plan
    terraform apply
 
-   > Apply complete! Resources: 8 added, 0 changed, 0 destroyed.
+   # -> Apply complete! Resources: 8 added, 0 changed, 0 destroyed.
 
-   > Outputs:
-   > backup = (sensitive value)
-   > server_ip = "<redacted>"
+   # -> Outputs:
+   # -> backup = (sensitive value)
+   # -> server_ip = "<redacted>"
    ```
 
 4. Parlay Terraform state into Ansible inputs:
