@@ -1,5 +1,5 @@
 ---
-- name: Setup user and harden SSH
+- name: Set up non-root user
   hosts: all
   become: yes # enable sudo
   vars_prompt:
@@ -14,7 +14,7 @@
       encrypt: sha512_crypt
 
   tasks:
-    - name: Create non-root user
+    - name: Create non-root user with sudo privileges
       user:
         name: "{{ username }}"
         password: "{{ password }}"
@@ -23,7 +23,11 @@
         shell: /bin/bash
         state: present
 
-    - name: Ensure .ssh dir exists
+    - name: Remember username of non-root user
+      set_fact:
+        created_username: "{{ username }}"
+
+    - name: Ensure ~/.ssh dir exists
       file:
         path: "/home/{{ username }}/.ssh"
         state: directory
@@ -44,19 +48,15 @@
       lineinfile:
         path: /etc/ssh/sshd_config
         regexp: "^#?PermitRootLogin"
-        line: "PermitRootLogin no"
+        line: "PermitRootLogin no" # disable login for root (even with SSH)
 
     - name: Disable password authentication for SSH
       lineinfile:
         path: /etc/ssh/sshd_config
         regexp: "^#?PasswordAuthentication"
-        line: "PasswordAuthentication no"
+        line: "PasswordAuthentication no" # allow only SSH login for remaining users
 
     - name: Restart SSH service
       service:
         name: ssh
         state: restarted
-
-    - name: Display completion message
-      debug:
-        msg: "User setup complete. Please exit and SSH back in as {{ username }}"

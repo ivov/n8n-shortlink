@@ -1,0 +1,150 @@
+---
+- name: Set up backups (sqlite DB to AWS S3)
+  hosts: all
+  become: yes # enable sudo
+  vars:
+    aws_data: "{{ lookup('file', 'tf-output-aws.json') | from_json }}"
+    backup_dir: "{{ app_dir }}/backup"
+    backup_encryption_key: "{{ backup_dir }}/n8n-shortlink-backup-encryption.key"
+    backup_credentials: "{{ aws_data.credentials }}"
+    bucket_name: "{{ aws_data.bucket_name }}"
+    bucket_region: "{{ aws_data.bucket_region }}"
+    bucket_prefix: n8n-shortlink-infra-backups
+
+  tasks:
+    # ==================================
+    #          backup packages
+    # ==================================
+
+    - name: Install required packages
+      apt:
+        name:
+          - awscli
+          - sqlite3
+          - openssl
+        state: present
+        update_cache: yes
+
+    # ==================================
+    #       backup and aws dirs
+    # ==================================
+
+    - name: Create dirs
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0700"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      loop:
+        - "{{ backup_dir }}"
+        - "{{ ansible_user_dir }}/.aws"
+
+    # ==================================
+    #         encryption key
+    # ==================================
+
+    - name: Generate backup encryption key
+      shell: openssl rand -out {{ backup_encryption_key }} 32
+      args:
+        creates: "{{ backup_encryption_key }}"
+
+    - name: Set backup encryption key permissions
+      file:
+        path: "{{ backup_encryption_key }}"
+        mode: "0600"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    # ==================================
+    #        AWS creds + config
+    # ==================================
+
+    - name: Set AWS credentials
+      copy:
+        dest: "{{ ansible_user_dir }}/.aws/credentials"
+        content: |
+          aws_access_key_id = {{ backup_credentials.access_key }}
+          aws_secret_access_key = {{ backup_credentials.secret_key }}
+        mode: "0600"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Set AWS config details
+      copy:
+        dest: "{{ ansible_user_dir }}/.aws/config"
+        # `bucket_name` and `bucket_prefix` are added only for use by bash scripts, not supported by awscli
+        content: |
+          [default]
+          region = {{ bucket_region }}
+          output = json
+          bucket_name = {{ bucket_name }}
+          bucket_prefix = {{ bucket_prefix }}
+        mode: "0600"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    # ==================================
+    #       validate AWS creds
+    # ==================================
+
+    - name: Verify AWS credentials
+      shell: aws sts get-caller-identity
+      register: aws_check
+      failed_when: aws_check.rc != 0
+      changed_when: false
+
+    - name: Test S3 bucket access
+      shell: aws s3 ls s3://{{ bucket_name }}
+      register: s3_check
+      failed_when: s3_check.rc != 0
+      changed_when: false
+
+    # ==================================
+    #       backup configuration
+    # ==================================
+
+    # backup-config is needed for `backup-list.sh` and `backup-restore.sh`. To improve in future. 
+    # - name: Create backup config file
+    #   copy:
+    #     dest: "{{ backup_dir }}/backup-config"
+    #     content: |
+    #       BUCKET_NAME="{{ backup_config.bucket_name }}"
+    #       BUCKET_REGION="{{ backup_config.bucket_region }}"
+    #     mode: "0600"
+    #     owner: "{{ ansible_user }}"
+    #     group: "{{ ansible_user }}"
+
+    # ==================================
+    #         backup scripts
+    # ==================================
+
+    - name: Copy backup scripts
+      copy:
+        src: "{{ item }}"
+        dest: "{{ backup_dir }}/"
+        mode: "0755"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      loop:
+        - backup-run.sh
+        - backup-list.sh
+        - backup-restore.sh
+
+    # ==================================
+    #            cron job
+    # ==================================
+
+    - name: Set up backup cron job
+      cron:
+        name: sqlite database backup
+        hour: "23"
+        minute: "30"
+        user: "{{ ansible_user }}"
+        job: >
+          APP_DIR="{{ app_dir }}"
+          BACKUP_DIR="{{ backup_dir }}"
+          BACKUP_ENCRYPTION_KEY="{{ backup_encryption_key }}"
+          BUCKET_NAME="{{ bucket_name }}"
+          BUCKET_PREFIX="{{ bucket_prefix }}"
+          {{ backup_dir }}/backup-run.sh
