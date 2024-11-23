@@ -1,26 +1,23 @@
 #!/bin/bash
 
-# Restore a sqlite BB backup from AWS S3: deploy/scripts/backup-restore.sh <backup_name>
+# Restore a sqlite DB backup from AWS S3: ./backup-restore.sh <backup_name>
 
 if [ $# -eq 0 ]; then
   echo -e "Error: No backup name provided.\nUsage: $0 <backup_name>\nExample: $0 2020-01-03-17:34:35+0200.sql.gz.enc"
   exit 1
 fi
 
-CONFIG_FILEPATH="$HOME/deploy/.config"
+APP_DIR="$HOME/.n8n-shortlink"
+BACKUP_DIR="$APP_DIR/backup"
+BACKUP_ENCRYPTION_KEY="$BACKUP_DIR/n8n-shortlink-backup-encryption.key"
+BACKUP_LOG_FILE="$BACKUP_DIR/backup.log"
 
-if [ ! -f "$CONFIG_FILEPATH" ]; then
-  echo "Error: Config file $CONFIG_FILEPATH not found."
-  exit 1
-fi
+BUCKET_NAME=$(grep bucket_name ~/.aws/config | cut -d '=' -f2 | tr -d ' ')
+BUCKET_PREFIX=$(grep bucket_prefix ~/.aws/config | cut -d '=' -f2 | tr -d ' ')
 
-BUCKET_NAME=$(grep BUCKET_NAME $CONFIG_FILEPATH | cut -d'=' -f2 | tr -d '"*')
-BUCKET_PREFIX="n8n-shortlink-backups/"
-ENCRYPTION_KEY_PATH="$HOME/.keys/n8n-shortlink-backup-secret.key"
-RESTORED_DB=".n8n-shortlink/restored.sqlite"
-LOG_FILE="$HOME/deploy/restore.log"
+RESTORED_DB="$BACKUP_DIR/restored.sqlite"
 BACKUP_NAME="$1"
-BUCKET_PATH="s3://$BUCKET_NAME/$BUCKET_PREFIX$BACKUP_NAME"
+BUCKET_URI="s3://$BUCKET_NAME/$BUCKET_PREFIX/$BACKUP_NAME"
 
 bold='\033[1m'
 unbold='\033[0m'
@@ -29,14 +26,14 @@ rm -f $RESTORED_DB
 
 echo -e "Selected backup: ${bold}$BACKUP_NAME${unbold}"
 echo "Downloading backup..."
-aws s3 cp "$BUCKET_PATH" "./$BACKUP_NAME" > /dev/null 2>&1
+aws s3 cp "$BUCKET_URI" "./$BACKUP_NAME" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
   echo "Failed to download backup from S3"
   exit 1
 fi
 
 echo "Decrypting and restoring backup..."
-openssl enc -d -aes-256-cbc -in "./$BACKUP_NAME" -pass "file:$ENCRYPTION_KEY_PATH" -pbkdf2 | gunzip | sqlite3 "$RESTORED_DB"
+openssl enc -d -aes-256-cbc -in "./$BACKUP_NAME" -pass "file:$BACKUP_ENCRYPTION_KEY" -pbkdf2 | gunzip | sqlite3 "$RESTORED_DB"
 if [ $? -ne 0 ]; then
   echo "Failed to decrypt and restore backup"
   rm -f "./$BACKUP_NAME"
