@@ -41,8 +41,9 @@ log_message() {
 #        compress + encrypt
 # ==================================
 
-sqlite3 $APP_DB .dump | gzip > "$TEMP_DIR/$PLAINTEXT_BACKUP_NAME"
+sqlite3 "$APP_DB" .dump | gzip > "$TEMP_DIR/$PLAINTEXT_BACKUP_NAME"
 
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
   log_message "Failed to dump and compress database"
   exit 1
@@ -50,6 +51,7 @@ fi
 
 openssl enc -aes-256-cbc -salt -in "$TEMP_DIR/$PLAINTEXT_BACKUP_NAME" -out "$TEMP_DIR/$ENCRYPTED_BACKUP_NAME" -pass "file:$BACKUP_ENCRYPTION_KEY" -pbkdf2
 
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
   log_message "Failed to encrypt backup"
   exit 1

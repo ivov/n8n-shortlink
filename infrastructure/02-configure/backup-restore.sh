@@ -13,7 +13,6 @@ fi
 APP_DIR="$HOME/.n8n-shortlink"
 BACKUP_DIR="$APP_DIR/backup"
 BACKUP_ENCRYPTION_KEY="$BACKUP_DIR/n8n-shortlink-backup-encryption.key"
-BACKUP_LOG_FILE="$BACKUP_DIR/backup.log"
 RESTORED_DB="$BACKUP_DIR/restored.sqlite"
 
 BUCKET_NAME=$(grep bucket_name ~/.aws/config | cut -d '=' -f2 | tr -d ' ')
@@ -28,11 +27,13 @@ BUCKET_URI="s3://$BUCKET_NAME/$BACKUP_NAME"
 bold='\033[1m'
 unbold='\033[0m'
 
-rm -f $RESTORED_DB
+rm -f "$RESTORED_DB"
 
 echo -e "Selected backup: ${bold}$BACKUP_NAME${unbold}"
 echo "Downloading backup..."
 aws s3 cp "$BUCKET_URI" "./$BACKUP_NAME" > /dev/null 2>&1
+
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
   echo "Failed to download backup from S3"
   exit 1
@@ -40,6 +41,8 @@ fi
 
 echo "Decrypting and restoring backup..."
 openssl enc -d -aes-256-cbc -in "./$BACKUP_NAME" -pass "file:$BACKUP_ENCRYPTION_KEY" -pbkdf2 | gunzip | sqlite3 "$RESTORED_DB"
+
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
   echo "Failed to decrypt and restore backup"
   rm -f "./$BACKUP_NAME"
