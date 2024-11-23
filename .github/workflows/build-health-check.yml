@@ -1,15 +1,12 @@
-name: Check build health
+name: Build health check
 
-on:
-  workflow_dispatch:
+on: workflow_dispatch
 
 jobs:
-  build-health:
-    name: Check Docker container health
+  build-health-check:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4.2.2
 
       - name: Build Docker image
         run: docker build --tag n8n-shortlink:ci .
