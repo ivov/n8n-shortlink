@@ -11,6 +11,7 @@ jobs:
       - name: Build Docker image
         run: docker build --tag n8n-shortlink:ci .
 
+      # TODO: Replace `sleep 10`
       - name: Run Docker container
         run: |
           docker run --detach --publish 3001:3001 --name n8n-shortlink-ci n8n-shortlink:ci
