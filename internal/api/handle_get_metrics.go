@@ -47,12 +47,6 @@ var (
 	)
 )
 
-var (
-	lastTotalRequestsReceived float64
-	lastTotalResponsesSent    float64
-	lastTotalProcessingTimeMs float64
-)
-
 func init() {
 	prometheus.MustRegister(totalRequestsReceived)
 	prometheus.MustRegister(totalResponsesSent)

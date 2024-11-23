@@ -61,7 +61,9 @@ func (api *API) HandleGetSlug(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(shortlink.Content))
+		if _, err := w.Write([]byte(shortlink.Content)); err != nil {
+			api.Logger.Error(err)
+		}
 	case "url":
 		http.Redirect(w, r, shortlink.Content, http.StatusMovedPermanently)
 	default:

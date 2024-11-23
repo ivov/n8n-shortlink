@@ -83,7 +83,7 @@ func TestAPI(t *testing.T) {
 	}
 
 	noFollowRedirectClient := http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 			return http.ErrUseLastResponse // do not follow redirect so we can inspect it
 		},
 	}

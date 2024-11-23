@@ -1,16 +1,16 @@
 # Development
 
-Install Go 1.22.5:
+Install Go 1.23.3:
 
 ```sh
-brew install go@1.22.5
+brew install go@1.23.3
 ```
 
 Install Go tooling:
 
 ```sh
 go install gotest.tools/gotestsum@latest
-go install golang.org/x/lint/golint@latest
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 go install github.com/air-verse/air@latest
 go install -tags 'sqlite3' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 ```
@@ -27,7 +27,14 @@ Create an alias:
 echo "alias s.go='cd $(pwd)'" >> ~/.zshrc && source ~/.zshrc
 ```
 
-Refer to the [Makefile](../Makefile):
+Create a DB and run migrations:
+
+```sh
+make db/create
+make db/mig/up
+```
+
+For more commands, refer to the [Makefile](../Makefile):
 
 ```sh
 make help
