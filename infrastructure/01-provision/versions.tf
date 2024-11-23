@@ -13,9 +13,9 @@ terraform {
   }
 
   cloud {
-    organization = "ivov"
+    organization = "n8n-shortlink-infra"
     workspaces {
-      name = "n8n-shortlink"
+      name = "n8n-shortlink-infra"
     }
   }
 }

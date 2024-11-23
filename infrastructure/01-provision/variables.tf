@@ -1,7 +1,7 @@
 variable "project_name" {
   description = "Project name for resource naming"
   type        = string
-  default     = "n8n-shortlink-terraform"
+  default     = "n8n-shortlink-infra"
 }
 
 # Hetzner Cloud
@@ -11,6 +11,8 @@ variable "hcloud_token" {
   type        = string
   sensitive   = true
 }
+
+# local
 
 variable "allowed_ssh_ips" {
   description = "List of IP addresses allowed to connect via SSH, in CIDR notation"
@@ -37,14 +39,14 @@ variable "aws_region" {
   default     = "eu-central-1"
 }
 
-variable "tf_automation_aws_access_key_id" {
-  description = "AWS access key ID for terraform-automation IAM user"
+variable "aws_access_key_id" {
+  description = "AWS access key ID for backup user"
   type        = string
   sensitive   = true
 }
 
-variable "tf_automation_aws_secret_access_key" {
-  description = "AWS secret access key for terraform-automation IAM user"
+variable "aws_secret_access_key" {
+  description = "AWS secret access key for backup user"
   type        = string
   sensitive   = true
 }

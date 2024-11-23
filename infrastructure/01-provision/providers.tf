@@ -4,6 +4,6 @@ provider "hcloud" {
 
 provider "aws" {
   region     = var.aws_region
-  access_key = var.tf_automation_aws_access_key_id
-  secret_key = var.tf_automation_aws_secret_access_key
+  access_key = var.aws_access_key_id
+  secret_key = var.aws_secret_access_key
 }
