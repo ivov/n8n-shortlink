@@ -1,0 +1,62 @@
+---
+- name: Set up non-root user
+  hosts: all
+  become: yes # escalate to root
+  vars_prompt:
+    - name: username
+      prompt: Enter username
+      private: no
+
+    - name: password
+      prompt: Enter password
+      private: yes
+      confirm: yes
+      encrypt: sha512_crypt
+
+  tasks:
+    - name: Create non-root user with sudo privileges
+      user:
+        name: "{{ username }}"
+        password: "{{ password }}"
+        groups: sudo
+        append: yes
+        shell: /bin/bash
+        state: present
+
+    - name: Remember username of non-root user
+      set_fact:
+        created_username: "{{ username }}"
+
+    - name: Ensure ~/.ssh dir exists
+      file:
+        path: "/home/{{ username }}/.ssh"
+        state: directory
+        mode: "0700"
+        owner: "{{ username }}"
+        group: "{{ username }}"
+
+    - name: Copy SSH public key from root to non-root user
+      copy:
+        src: /root/.ssh/authorized_keys
+        dest: "/home/{{ username }}/.ssh/authorized_keys"
+        mode: "0600"
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        remote_src: yes
+
+    - name: Disable root SSH login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^#?PermitRootLogin"
+        line: "PermitRootLogin no" # disable login for root (even with SSH)
+
+    - name: Disable password authentication for SSH
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^#?PasswordAuthentication"
+        line: "PasswordAuthentication no" # allow only SSH login for remaining users
+
+    - name: Restart SSH service
+      service:
+        name: ssh
+        state: restarted

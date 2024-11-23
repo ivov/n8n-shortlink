@@ -25,7 +25,7 @@ live:
 #    audit
 # ------------
 
-## audit: Tun `go mod tidy`, `go fmt`, `golint`, `go test`, and `go vet`
+## audit: Run `go mod tidy`, `go fmt`, `golint`, `go test`, and `go vet`
 audit:
 	echo 'Tidying...'
 	go mod tidy

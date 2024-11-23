@@ -1,0 +1,110 @@
+---
+- name: Set up system (timezone, packages, unattended upgrades)
+  hosts: all
+  become: yes # escalate to root
+
+  tasks:
+    # ==================================
+    #             timezone
+    # ==================================
+
+    - name: Set timezone
+      timezone:
+        name: Europe/Berlin
+
+    # ==================================
+    #             packages
+    # ==================================
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: yes
+        dpkg_options: "force-confold,force-confdef"
+        # These dpkg options handle package config file conflicts during unattended upgrades:
+        # `force-confold` -> If config was customized locally, on upgrade keep existing config.
+        # `force-confdef` -> If new config from package and no existing config, on upgrade take new config.
+
+    - name: Install packages
+      apt:
+        name:
+          - fail2ban
+          - unattended-upgrades
+        state: present
+
+    - name: Configure fail2ban
+      copy:
+        dest: /etc/fail2ban/jail.local
+        # Ban at sixth failed SSH login attempt for 10 minutes.
+        content: |
+          [sshd]
+          enabled = true
+          port = ssh
+          filter = sshd
+          logpath = /var/log/auth.log
+          maxretry = 5
+          bantime = 3600
+
+    - name: Enable and start fail2ban
+      systemd:
+        name: fail2ban
+        enabled: yes
+        state: started
+
+    # ==================================
+    #              ufw
+    # ==================================
+
+    - name: Install ufw
+      apt:
+        name: ufw
+        state: present
+
+    - name: Allow OpenSSH
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: Allow HTTP
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+
+    - name: Allow HTTPS
+      ufw:
+        rule: allow
+        port: '443'
+        proto: tcp
+
+    - name: Enable ufw
+      ufw:
+        state: enabled
+        policy: deny
+
+    - name: Enable unattended upgrades
+      debconf:
+        name: unattended-upgrades
+        question: unattended-upgrades/enable_auto_updates
+        value: true
+        vtype: boolean
+
+    # ==================================
+    #        unattended upgrades
+    # ==================================
+
+    - name: Configure unattended upgrades
+      # Ensure unattended upgrades upgrade and upgrade daily, and clean up weekly
+      copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+          APT::Periodic::AutocleanInterval "7";
+
+    - name: Reboot system
+      reboot:

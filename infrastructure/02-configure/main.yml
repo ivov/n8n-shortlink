@@ -1,0 +1,25 @@
+---
+- name: User setup
+  import_playbook: 01-user-setup.yml
+  vars:
+    ansible_user: root
+
+- name: System setup
+  import_playbook: 02-system-setup.yml
+  vars:
+    ansible_user: "{{ created_username }}"
+
+- name: Tooling setup
+  import_playbook: 03-tooling-setup.yml
+  vars:
+    ansible_user: "{{ created_username }}"
+
+- name: App dir setup
+  import_playbook: 04-app-dir-setup.yml
+  vars:
+    ansible_user: "{{ created_username }}"
+
+- name: Backup setup
+  import_playbook: 05-backup-setup.yml
+  vars:
+    ansible_user: "{{ created_username }}"

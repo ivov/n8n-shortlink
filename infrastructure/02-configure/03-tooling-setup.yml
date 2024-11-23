@@ -1,0 +1,89 @@
+---
+- name: Set up tooling (caddy, docker, sqlite3)
+  hosts: all
+  become: yes # escalate to root
+
+  tasks:
+    # ==================================
+    #              Caddy
+    # ==================================
+
+    - name: Install Caddy prerequisites
+      become: yes # escalate to root
+      apt:
+        name:
+          - debian-keyring
+          - debian-archive-keyring
+          - apt-transport-https
+          - curl
+        state: present
+
+    - name: Add Caddy GPG key for package verification
+      shell: curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+      args:
+        creates: /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+
+    - name: Add Caddy repository to apt sources
+      get_url:
+        url: https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt
+        dest: /etc/apt/sources.list.d/caddy-stable.list
+
+    - name: Install Caddy
+      apt:
+        name: caddy
+        state: present
+        update_cache: yes
+
+    - name: Copy local Caddyfile over to remote
+      copy:
+        src: Caddyfile
+        dest: /etc/caddy/Caddyfile
+        mode: "0644"
+
+    - name: Start Caddy
+      systemd:
+        name: caddy
+        state: started
+        enabled: yes
+
+    - name: Reload Caddy configuration
+      systemd:
+        name: caddy
+        state: reloaded
+
+    # ==================================
+    #      docker + docker-compose
+    # ==================================
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    # The `docker-compose` apt package often lags behind the latest release, so we install it manually from GitHub.
+    - name: Download docker-compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/latest/download/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+        dest: /usr/local/bin/docker-compose
+        mode: "0755"
+
+    - name: Create docker-compose symlink
+      file:
+        src: /usr/local/bin/docker-compose
+        dest: /usr/bin/docker-compose
+        state: link
+
+    # ==================================
+    #             sqlite3
+    # ==================================
+
+    - name: Install sqlite3
+      apt:
+        name: sqlite3
+        state: present
