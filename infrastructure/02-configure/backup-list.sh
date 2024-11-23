@@ -22,16 +22,16 @@ human_readable_size() {
     ((unit++))
   done
 
-  printf "%.2f %s" $size "${units[$unit]}"
+  printf "%.2f %s" "$size" "${units[$unit]}"
 }
 
 aws s3 ls "s3://$BUCKET_NAME/" | sort -r | while read -r line; do
-  date=$(echo $line | awk '{print $1}')
-  time=$(echo $line | awk '{print $2}')
-  size=$(echo $line | awk '{print $3}')
-  filename=$(echo $line | awk '{print $4}')
+  date=$(echo "$line" | awk '{print $1}')
+  time=$(echo "$line" | awk '{print $2}')
+  size=$(echo "$line" | awk '{print $3}')
+  filename=$(echo "$line" | awk '{print $4}')
 
-  hr_size=$(human_readable_size $size)
+  hr_size=$(human_readable_size "$size")
 
   printf "%-12s %-12s %-12s %s\n" "$date" "$time" "$hr_size" "$filename"
 done
