@@ -12,10 +12,6 @@
         state: directory
         mode: "0700"
 
-    - name: Remember app dir
-      set_fact:
-        app_dir: "{{ app_dir }}" 
-
     - name: Create empty SQLite database
       shell: "sqlite3 {{ app_db }} ''"
       args:
