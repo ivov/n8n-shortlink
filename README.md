@@ -29,8 +29,9 @@ Deployment stack:
 
 ## Docs
 
-- [`provision.md`](docs/provision.md)
+- [`01-provision.md`](docs/01-provision.md)
+- [`02-configure.md`](docs/02-configure.md)
+- [`03-deploy.md`](docs/03-deploy.md)
 - [`develop.md`](docs/develop.md)
 - [`release.md`](docs/release.md)
-- [`deploy.md`](docs/deploy.md)
 - [`monitor.md`](docs/monitor.md) 
