@@ -15,7 +15,7 @@ docker-compose --file ~/.n8n-shortlink/deploy/docker-compose.monitoring.yml up -
 docker-compose --file ~/.n8n-shortlink/deploy/docker-compose.yml --profile production up --detach
 ```
 
-Log in to `https://grafana.domain.com` with `admin/admin credentials` and set a new secure password for the Grafana admin user.
+Log in to `https://grafana.domain.com` with `admin/admin` credentials and set a new secure password for the Grafana admin user.
 
 ## Deploy on release
 
