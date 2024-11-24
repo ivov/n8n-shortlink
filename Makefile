@@ -143,15 +143,15 @@ docker/connect:
 
 ## vps/login: Log in to VPS
 vps/login:
-	ssh shortlink_vps
+	ssh n8n-shortlink-infra
 .PHONY: vps/login
 
 ## vps/caddy/logs: Tail Caddy logs
 vps/caddy/logs:
-	ssh shortlink_vps 'journalctl -u caddy -f'
+	ssh n8n-shortlink-infra 'journalctl -u caddy -f'
 .PHONY: vps/caddy/logs
 
 ## vps/logs/app: Tail app container logs
 vps/app/logs:
-	ssh shortlink_vps 'docker logs -f n8n-shortlink'
+	ssh n8n-shortlink-infra 'docker logs -f n8n-shortlink'
 .PHONY: vps/app/logs
