@@ -4,6 +4,10 @@
   vars:
     app_dir: "{{ ansible_user_dir }}/.n8n-shortlink"
     app_db: "{{ app_dir }}/n8n-shortlink.sqlite"
+  vars_prompt:
+    - name: sentry_dsn
+      prompt: Enter Sentry DSN
+      private: no
 
   tasks:
     - name: Create app dir
@@ -16,3 +20,9 @@
       shell: "sqlite3 {{ app_db }} ''"
       args:
         creates: "{{ app_db }}" # run `shell` _if and only if_ this file does not yet exist
+
+    - name: Create .env.production file with Sentry DSN
+      copy:
+        dest: "{{ app_dir }}/.env.production"
+        content: "N8N_SHORTLINK_SENTRY_DSN={{ sentry_dsn }}"
+        mode: "0600"

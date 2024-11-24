@@ -7,7 +7,10 @@ services:
     ports:
       - 3001:3001
     env_file:
-      - .env.production
+      - .env.production # for N8N_SHORTLINK_SENTRY_DSN
+    environment:
+      - N8N_SHORTLINK_HOST=0.0.0.0
+      - N8N_SHORTLINK_ENVIRONMENT=production
     volumes:
       - ${HOME}/.n8n-shortlink:/root/.n8n-shortlink
     restart: unless-stopped
@@ -20,8 +23,9 @@ services:
     profiles: ["local"]
     ports:
       - 3001:3001
-    env_file:
-      - .env.local
+    environment:
+      - N8N_SHORTLINK_HOST=0.0.0.0
+      - N8N_SHORTLINK_ENVIRONMENT=development
     volumes:
       - ${HOME}/.n8n-shortlink:/root/.n8n-shortlink
     restart: unless-stopped

@@ -79,6 +79,13 @@
         dest: /usr/bin/docker-compose
         state: link
 
+    # Set up a shared network for app and monitoring containers to communicate.
+    # Requires Ansible collection `community.docker`.
+    - name: Create Docker network for n8n-shortlink
+      community.docker.docker_network:
+        name: n8n-shortlink-network
+        state: present 
+
     # ==================================
     #             sqlite3
     # ==================================
