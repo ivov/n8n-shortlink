@@ -10,6 +10,7 @@ This guide explains how to configure the VPS for the app and set up backups.
    brew install ansible
    cd infrastructure/02-configure
    ansible all -m ping
+   # -> Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
    ```
 
 2. Install Ansible collection for Docker network management:
@@ -20,6 +21,8 @@ This guide explains how to configure the VPS for the app and set up backups.
    ```
 
 3. In your DNS provider, add A records for the `domain.com` and `grafana.domain.com` pointing to the server's IP address, specified in `02-configure/hosts`.
+
+4. At [Sentry](https://sentry.io/), create a new project `n8n-shortlink` and note down its **DSN**.
 
 ## Run
 
@@ -49,7 +52,7 @@ Host n8n-shortlink-infra
     IdentityFile ~/.ssh/id_ed25519_n8n_shortlink_infra
 ```
 
-Now you can use `ssh n8n-shortlink-infra` to  SSH into the VPS as the non-root user.
+Now you can use `ssh n8n-shortlink-infra` to SSH in as the non-root user.
 
 ### 2. System setup
 

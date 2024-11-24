@@ -2,7 +2,7 @@
 
 This guide explains how to provision the requisite infrastructure for `n8n-shortlink`
 
-- **Server**: CAX11 on Hetzner Cloud. ARM64 with 2 vCPU, 4 GiB RAM, 40 GiB disk, running Ubuntu 22.04, located at `nbg1-dc3` (Nuremberg) data center. Cloud-level ingress rules allow traffic via TCP ports 22 (with IP restriction), 80 and 443.
+- **Server**: CAX11 on Hetzner Cloud. ARM64 with 2 vCPU, 4 GiB RAM, 40 GiB disk, running Ubuntu 22.04, located at `nbg1-dc3` (Nuremberg) data center. Cloud-level ingress rules allow traffic via HTTP, HTTPS and SSH ports.
 - **Object store**: AWS S3 bucket for backup storage with 10-day retention policy. Dedicated IAM user with least-privilege policy granting bucket-specific permissions.
 
 ## Setup
@@ -29,9 +29,9 @@ ssh-keygen -t ed25519 -C "my@email.com" -f ~/.ssh/id_ed25519_n8n_shortlink_infra
 4. At [AWS](https://aws.amazon.com/console/):
 
 - Sign up for an account
-- Create an IAM policy `n8n-shortlink-infra-admin-policy` (see content below).
-- Create an IAM user `n8n-shortlink-infra-admin-user` (no AWS Management Console access), attaching the policy to this admin user.
-- Generate access keys for this admin user, selecting "Third-party service". 
+- Create an IAM policy `n8n-shortlink-infra-admin-policy` (content below)
+- Create an IAM user `n8n-shortlink-infra-admin-user` (select no AWS Management Console access), attaching the policy to this admin user.
+- Generate access keys for this admin user (select "Third-party service")  
 
 Policy: `n8n-shortlink-infra-admin-policy`
 
@@ -56,7 +56,7 @@ Policy: `n8n-shortlink-infra-admin-policy`
 }
 ```
 
-5. At [HCP Terraform](https://www.hashicorp.com/products/terraform):
+5. At [HCP Terraform](https://app.terraform.io):
 
 - Sign up for an account
 - Create a new organization `n8n-shortlink-infra` 
@@ -66,7 +66,6 @@ Policy: `n8n-shortlink-infra-admin-policy`
 
   - `ssh_public_key`: Content of `~/.ssh/id_ed25519_n8n_shortlink_infra.pub` from step 3.
   - `hcloud_token`: Hetzner cloud project API token from step 3.
-  - `allowed_ssh_ips`: IP address to SSH from in string array in CIDR notation, e.g. `["125.124.122.231/32"]`. Mark as HCL-type variable.
   - `aws_access_key_id`: Access key ID for `n8n-shortlink-infra-backup-user` IAM user.
   - `aws_secret_access_key`. Secret access key for `n8n-shortlink-infra-backup-user` IAM user.
 

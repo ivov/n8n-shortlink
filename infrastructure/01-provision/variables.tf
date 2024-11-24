@@ -14,17 +14,6 @@ variable "hcloud_token" {
 
 # local
 
-variable "allowed_ssh_ips" {
-  description = "List of IP addresses allowed to connect via SSH, in CIDR notation"
-  type        = list(string)
-  sensitive   = true
-
-  validation {
-    condition     = can([for ip in var.allowed_ssh_ips : regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", ip)])
-    error_message = "Allowed SSH IPs must be in CIDR notation (e.g., [\"1.2.3.4/32\"])"
-  }
-}
-
 variable "ssh_public_key" {
   description = "SSH public key content"
   type        = string

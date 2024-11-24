@@ -4,7 +4,6 @@ module "server" {
   server_type     = "cax11"
   location        = "nbg1"
   hcloud_token    = var.hcloud_token
-  allowed_ssh_ips = var.allowed_ssh_ips
   ssh_public_key  = var.ssh_public_key
 }
 
