@@ -1,5 +1,7 @@
 # Deploy
 
+This guide explains how to deploy the app to production.
+
 ## Initial deploy
 
 When the docker containers are not running yet, copy the compose files and start the containers.
