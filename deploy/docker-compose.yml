@@ -7,12 +7,27 @@ services:
     ports:
       - 3001:3001
     env_file:
-      - .env.production # for N8N_SHORTLINK_SENTRY_DSN
+      - .env.production # only for N8N_SHORTLINK_SENTRY_DSN
     environment:
       - N8N_SHORTLINK_HOST=0.0.0.0
       - N8N_SHORTLINK_ENVIRONMENT=production
     volumes:
       - ${HOME}/.n8n-shortlink:/root/.n8n-shortlink
+    restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    networks:
+      - n8n-shortlink-network
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=21600 # every 6 hours
     restart: unless-stopped
     networks:
       - n8n-shortlink-network
