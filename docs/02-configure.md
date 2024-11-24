@@ -8,14 +8,15 @@ This guide explains how to configure the VPS for the app and set up backups.
 
    ```sh
    brew install ansible
-   ansible --version # >= 2.18
-   ```
-
-2. Check that Ansible can connect to the server:
-
-   ```sh
    cd infrastructure/02-configure
    ansible all -m ping
+   ```
+
+2. Install Ansible collection for Docker network management:
+
+   ```sh
+   ansible-galaxy collection install community.docker
+   ansible-galaxy collection list | grep community.docker
    ```
 
 3. In your DNS provider, add A records for the `domain.com` and `grafana.domain.com` pointing to the server's IP address, specified in `02-configure/hosts`.
