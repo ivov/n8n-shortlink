@@ -18,20 +18,20 @@ Features:
 Deployment stack:
 
 - Provisioning with Terraform
+- Configuration with Ansible
 - Metrics with Prometheus
-- Logging with zap, Promtail, Loki
+- Logging with Promtail + Loki
 - Monitoring with Grafana
 - Caddy as reverse proxy
 - Error tracking with Sentry
 - Backups with AWS S3 + cronjob
-- Bash scripts to automate VPS setup
-- Releases with GitHub Actions, GHCR, Docker
+- Releases with GitHub Actions + GHCR
+- Deployment with Compose and Watchtower
 
 ## Docs
 
+- [`00-develop.md`](docs/00-develop.md)
 - [`01-provision.md`](docs/01-provision.md)
 - [`02-configure.md`](docs/02-configure.md)
 - [`03-deploy.md`](docs/03-deploy.md)
-- [`develop.md`](docs/develop.md)
-- [`release.md`](docs/release.md)
 - [`monitor.md`](docs/monitor.md) 
