@@ -3,7 +3,7 @@
 This guide explains how to provision the requisite infrastructure for `n8n-shortlink`
 
 - **Server**: CAX11 on Hetzner Cloud. ARM64 with 2 vCPU, 4 GiB RAM, 40 GiB disk, running Ubuntu 22.04, located at `nbg1-dc3` (Nuremberg) data center. Cloud-level ingress rules allow traffic via HTTP, HTTPS and SSH ports.
-- **Object store**: AWS S3 bucket for backup storage with 10-day retention policy. Dedicated IAM user with least-privilege policy granting bucket-specific permissions.
+- **Object store**: AWS S3 bucket for backup storage with 10-day retention policy. Dedicated IAM user with least-privilege policy on specific bucket.
 
 ## Setup
 
