@@ -36,9 +36,9 @@ git tag v1.2.3
 git push origin v1.2.3
 ```
 
-3. This triggers the [`release` workflow](https://github.com/ivov/n8n-shortlink/actions/workflows/release.yml). On completion, the new image will be [listed](https://github.com/ivov/n8n-shortlink/pkgs/container/n8n-shortlink) on GHCR. Watchtower will discover for the image and deploy it to production. (Watchtower polls every six hours.)
+This tag push triggers the [`release` workflow](https://github.com/ivov/n8n-shortlink/actions/workflows/release.yml). On completion, the new image is [listed](https://github.com/ivov/n8n-shortlink/pkgs/container/n8n-shortlink) on GHCR. Watchtower will discover the image and deploy it to production.
 
-To prompt Watchtower to check immediately:
+Watchtower polls every six hours. To prompt Watchtower to check immediately:
 
 ```sh
 ssh n8n-shortlink-infra "docker kill --signal=SIGHUP watchtower"
