@@ -1,6 +1,8 @@
-# Development
+# Develop
 
-Install tooling:
+This guide explains how to set up a local development environment.
+
+1. Install tooling:
 
 ```sh
 brew install go@1.23.3
@@ -8,36 +10,31 @@ go install gotest.tools/gotestsum@latest
 go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 go install github.com/air-verse/air@latest
 go install -tags 'sqlite3' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-brew install shellcheck
+brew install shellcheck@0.10.0
 ```
 
-Clone repository:
+2. Clone repository:
 
 ```sh
-git clone git@github.com:ivov/n8n-shortlink.git && cd n8n-shortlink
+git clone git@github.com:ivov/n8n-shortlink.git
 ```
 
-Create an alias:
+3. Create a DB at `~/.n8n-shortlink/n8n-shortlink.sqlite` and run migrations:
 
 ```sh
-echo "alias s.go='cd $(pwd)'" >> ~/.zshrc && source ~/.zshrc
-```
-
-Create a DB and run migrations:
-
-```sh
+cd n8n-shortlink
 make db/create
 make db/mig/up
 ```
 
-For more commands, refer to the [Makefile](../Makefile):
+For all `Makefile` commands:
 
 ```sh
 make help
 ```
 
 > [!IMPORTANT]  
-> HTML files are embedded in the binary at compile time, so if you change them, you need to rebuild the binary, else use `make live` to start the server with live reload.
+> When developing locally, keep in mind that HTML files are embedded in the binary at compile time, so if you change HTML files, you need to rebuild the binary, else use `make live` to start the server with live reload.
 
 ## Sample requests
 
