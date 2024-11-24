@@ -2,7 +2,7 @@
 
 ## Initial deploy
 
-> When the docker containers are not running yet, copy the compose files and start the containers.
+When the docker containers are not running yet, copy the compose files and start the containers.
 
 ```sh
 cd infrastructure/03-deploy
@@ -17,7 +17,7 @@ Log in to `https://grafana.domain.com` with `admin/admin credentials` and set a 
 
 ## Deploy on release
 
-> When the docker containers are already running, release a new version of the image.
+When the docker containers are already running, release a new version of the image.
 
 1. Ensure local and remote `master` branches are in sync:
 
@@ -42,7 +42,7 @@ To prompt Watchtower to check immediately:
 ssh n8n-shortlink-infra "docker kill --signal=SIGHUP watchtower"
 ```
 
-Then wait for Watchtower to pull the new image and start the container:
+Then wait for Watchtower to pull the new image and start the container, and check that the new version is deployed:
 
 ```sh
 ssh n8n-shortlink-infra "docker ps | grep n8n-shortlink"
