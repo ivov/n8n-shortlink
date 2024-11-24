@@ -4,25 +4,35 @@
   vars:
     app_dir: "{{ ansible_user_dir }}/.n8n-shortlink"
     app_db: "{{ app_dir }}/n8n-shortlink.sqlite"
+    backup_dir: "{{ app_dir }}/backup"
+    deploy_dir: "{{ app_dir }}/deploy"
+    
   vars_prompt:
     - name: sentry_dsn
       prompt: Enter Sentry DSN
       private: no
 
   tasks:
-    - name: Create app dir
+    - name: Create required directories
       file:
-        path: "{{ app_dir }}"
+        path: "{{ item }}"
         state: directory
         mode: "0700"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      loop:
+        - "{{ app_dir }}"
+        - "{{ deploy_dir }}"
+        - "{{ backup_dir }}"
+        - "{{ ansible_user_dir }}/.aws"
 
     - name: Create empty SQLite database
       shell: "sqlite3 {{ app_db }} ''"
       args:
         creates: "{{ app_db }}" # run `shell` _if and only if_ this file does not yet exist
 
-    - name: Create .env.production file with Sentry DSN
+    - name: Create `.env.production` file
       copy:
-        dest: "{{ app_dir }}/.env.production"
+        dest: "{{ deploy_dir }}/.env.production"
         content: "N8N_SHORTLINK_SENTRY_DSN={{ sentry_dsn }}"
         mode: "0600"

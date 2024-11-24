@@ -1,4 +1,4 @@
-name: n8n-shortlink
+name: n8n_shortlink_compose
 services:
   n8n-shortlink: 
     image: ghcr.io/ivov/n8n-shortlink:latest

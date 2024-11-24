@@ -1,39 +1,25 @@
 # Deploy
 
-## Old instructions
+## Initial deploy
 
-- **Sentry**: Create a project and note down the **DSN**.
-
-Run server start script:
+> When the docker containers are not running yet, copy the compose files and start the containers.
 
 ```sh
-export GITHUB_USER=<user-name-from-step-4>
-export GITHUB_REPO=<repo-name-from-step-4>
-export GITHUB_TOKEN=<github-token-from-step-4>
-export SENTRY_DSN=<sentry-dsn-from-step-4>
+cd infrastructure/03-deploy
+scp -r * n8n-shortlink-infra:~/.n8n-shortlink/deploy/
 
-echo "GITHUB_USER=$GITHUB_USER" >> deploy/.config
-echo "GITHUB_REPO=$GITHUB_REPO" >> deploy/.config
-mkdir -p ~/.docker
-echo '{
-  "auths": {
-    "ghcr.io": {
-      "auth": "'$(echo -n "$GITHUB_USER:$GITHUB_TOKEN" | base64)'"
-    }
-  }
-}' > ~/.docker/config.json
-echo "N8N_SHORTLINK_SENTRY_DSN=$SENTRY_DSN" >> deploy/.env.production
-
-docker network create n8n-shortlink-network
-deploy/scripts/start-services.sh
+ssh n8n-shortlink-infra
+docker-compose --file ~/.n8n-shortlink/deploy/docker-compose.monitoring.yml up --detach
+docker-compose --file ~/.n8n-shortlink/deploy/docker-compose.yml --profile production up --detach
 ```
 
-Log in to `https://grafana.domain.com` and set a password for the Grafana admin user.
+Log in to `https://grafana.domain.com` with `admin/admin credentials` and set a new secure password for the Grafana admin user.
 
+## Deploy on release
 
-## Old: Release
+> When the docker containers are already running, release a new version of the image.
 
-Ensure local and remote `master` branches are in sync:
+1. Ensure local and remote `master` branches are in sync:
 
 ```sh
 git fetch origin
@@ -41,27 +27,23 @@ git status
 # -> Your branch is up to date with 'origin/master'.
 ```
 
-Create tag (following semver) and push it:
+2. Create a tag (following semver) and push it to remote:
 
 ```sh
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.2.3
+git push origin v1.2.3
 ```
 
-Monitor the release on GitHub:
+3. This triggers the [`release` workflow](https://github.com/ivov/n8n-shortlink/actions/workflows/release.yml). On completion, the new image will be [listed](https://github.com/ivov/n8n-shortlink/pkgs/container/n8n-shortlink) on GHCR. Watchtower will discover for the image and deploy it to production. (Watchtower polls every six hours.)
 
-- https://github.com/ivov/n8n-shortlink/actions/workflows/release-on-tag-push.yml
-
-On completion, this release is listed as `latest` on GHCR:
-
-- https://github.com/ivov/n8n-shortlink/pkgs/container/n8n-shortlink
-
-Deploy the release to production:
+To prompt Watchtower to check immediately:
 
 ```sh
-ssh shortlink_vps
+ssh n8n-shortlink-infra "docker kill --signal=SIGHUP watchtower"
+```
 
-COMPOSE_PROJECT_NAME=n8n_shortlink docker-compose --file deploy/docker-compose.monitoring.yml down
-COMPOSE_PROJECT_NAME=n8n_shortlink docker-compose --file deploy/docker-compose.yml down
-deploy/scripts/start-services.sh
+Then wait for Watchtower to pull the new image and start the container:
+
+```sh
+ssh n8n-shortlink-infra "docker ps | grep n8n-shortlink"
 ```

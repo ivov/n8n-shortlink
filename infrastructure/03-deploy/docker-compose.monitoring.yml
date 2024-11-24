@@ -1,3 +1,4 @@
+name: n8n_shortlink_monitoring_compose
 services:
   grafana:
     image: grafana/grafana-oss:latest

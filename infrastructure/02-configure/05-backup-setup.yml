@@ -27,21 +27,6 @@
         update_cache: yes
 
     # ==================================
-    #       backup and aws dirs
-    # ==================================
-
-    - name: Create dirs
-      file:
-        path: "{{ item }}"
-        state: directory
-        mode: "0700"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-      loop:
-        - "{{ backup_dir }}"
-        - "{{ ansible_user_dir }}/.aws"
-
-    # ==================================
     #         encryption key
     # ==================================
 
