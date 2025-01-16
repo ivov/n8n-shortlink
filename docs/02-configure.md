@@ -1,6 +1,6 @@
 # Configure
 
-This guide explains how to configure the VPS for the app and set up backups.
+This guide explains how to configure the VPS for the app.
 
 ## Setup
 
@@ -32,18 +32,7 @@ To run all playbooks at once:
 ansible-playbook main.yml
 ```
 
-To run them one by one, see below. Running playbooks one by one is only necessary for debugging.
-
-### 1. User setup
-
-```sh
-ansible-playbook 01-user-setup.yml
-```
-
-> [!IMPORTANT]  
-> Take note of the non-root user name and `sudo` password.
-
-Add this entry to `~/.ssh/config`, replacing the all-caps values:
+During user setup, take note of the non-root user name you create and their `sudo` password. Then add this entry to `~/.ssh/config`, replacing the all-caps values:
 
 ```
 Host n8n-shortlink-infra
@@ -52,7 +41,17 @@ Host n8n-shortlink-infra
     IdentityFile ~/.ssh/id_ed25519_n8n_shortlink_infra
 ```
 
-Now you can use `ssh n8n-shortlink-infra` to SSH in as the non-root user.
+Now you can use `ssh n8n-shortlink-infra` or `make vps/login` to SSH in as the non-root user.
+
+## Debug
+
+You can run playbooks one by one for debugging.
+
+### 1. User setup
+
+```sh
+ansible-playbook 01-user-setup.yml
+```
 
 ### 2. System setup
 
