@@ -72,13 +72,13 @@
     - name: Allow HTTP
       ufw:
         rule: allow
-        port: '80'
+        port: "80"
         proto: tcp
 
     - name: Allow HTTPS
       ufw:
         rule: allow
-        port: '443'
+        port: "443"
         proto: tcp
 
     - name: Enable ufw
@@ -86,16 +86,16 @@
         state: enabled
         policy: deny
 
+    # ==================================
+    #        unattended upgrades
+    # ==================================
+
     - name: Enable unattended upgrades
       debconf:
         name: unattended-upgrades
         question: unattended-upgrades/enable_auto_updates
         value: true
         vtype: boolean
-
-    # ==================================
-    #        unattended upgrades
-    # ==================================
 
     - name: Configure unattended upgrades
       # Ensure unattended upgrades upgrade and upgrade daily, and clean up weekly

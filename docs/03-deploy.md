@@ -44,8 +44,12 @@ Watchtower polls every six hours. To prompt Watchtower to check immediately:
 ssh n8n-shortlink-infra "docker kill --signal=SIGHUP watchtower"
 ```
 
-Then wait for Watchtower to pull the new image and start the container, and check that the new version is deployed:
+Then wait for Watchtower to pull the new image and start the container, and watch for the new version being deployed:
 
 ```sh
-ssh n8n-shortlink-infra "docker ps | grep n8n-shortlink"
+# on one terminal
+ssh n8n-shortlink-infra "watch docker ps"
+
+# on another terminal
+ssh n8n-shortlink-infra "docker logs -f n8n-shortlink"
 ```

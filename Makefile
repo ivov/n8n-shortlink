@@ -148,10 +148,10 @@ vps/login:
 
 ## vps/caddy/logs: Tail Caddy logs
 vps/caddy/logs:
-	ssh n8n-shortlink-infra 'journalctl -u caddy -f'
+	ssh n8n-shortlink-infra "journalctl -u caddy -f"
 .PHONY: vps/caddy/logs
 
 ## vps/logs/app: Tail app container logs
 vps/app/logs:
-	ssh n8n-shortlink-infra 'docker logs -f n8n-shortlink'
+	ssh n8n-shortlink-infra "docker logs -f n8n-shortlink"
 .PHONY: vps/app/logs
