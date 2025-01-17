@@ -9,10 +9,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "backup" {
     id     = "cleanup"
     status = "Enabled"
 
-    filter {
-      prefix = "${var.project_name}-backup/"
-    }
-
     expiration {
       days = 10
     }
