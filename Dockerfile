@@ -8,7 +8,7 @@ RUN apk add --no-cache git build-base sqlite
 RUN go mod download
 RUN go build -o bin cmd/server/main.go
 
-FROM --platform=$TARGETPLATFORM alpine:latest
+FROM alpine:latest
 RUN mkdir /root/.n8n-shortlink
 WORKDIR /root/n8n-shortlink
 COPY --from=builder /builder-dir/bin bin
