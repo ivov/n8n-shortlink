@@ -47,9 +47,7 @@ ssh n8n-shortlink-infra "docker kill --signal=SIGHUP watchtower"
 Then wait for Watchtower to pull the new image and start the container, and watch for the new version being deployed:
 
 ```sh
-# on one terminal
-ssh n8n-shortlink-infra "watch docker ps"
-
-# on another terminal
+# on separate terminals
 ssh n8n-shortlink-infra "docker logs -f n8n-shortlink"
+ssh n8n-shortlink-infra "docker logs -f watchtower"
 ```
