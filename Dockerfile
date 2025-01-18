@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.22-alpine AS builder
+FROM golang:1.23-alpine AS builder
 WORKDIR /builder-dir
 COPY . ./
 ENV CGO_ENABLED=1
@@ -15,3 +15,4 @@ COPY --from=builder /builder-dir/bin bin
 COPY --from=builder /builder-dir/internal/db/migrations internal/db/migrations
 EXPOSE 3001
 CMD ["./bin/main"]
+

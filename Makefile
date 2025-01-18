@@ -124,7 +124,11 @@ docker/build:
 
 ## docker/run: Run Docker container off image `n8n-shortlink:local`
 docker/run:
-	docker compose --file deploy/docker-compose.yml --profile local up
+	@if ! docker network inspect n8n-shortlink-network >/dev/null 2>&1; then \
+		echo "Creating network n8n-shortlink-network..." && \
+		docker network create n8n-shortlink-network; \
+	fi && \
+	docker compose --file infrastructure/03-deploy/docker-compose.yml --profile local up
 .PHONY: docker/run
 
 ## docker/stop: Stop Docker container
