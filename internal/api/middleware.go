@@ -152,14 +152,21 @@ type wrappedResponseWriter struct {
 	http.ResponseWriter
 	statusCode   int
 	bytesWritten int
+	wroteHeader  bool // prevent metrics middleware (using httpsnoop) from calling WriteHeader multiple times on the same response writer
 }
 
 func (rw *wrappedResponseWriter) WriteHeader(statusCode int) {
-	rw.ResponseWriter.WriteHeader(statusCode)
-	rw.statusCode = statusCode
+	if !rw.wroteHeader {
+		rw.statusCode = statusCode
+		rw.ResponseWriter.WriteHeader(statusCode)
+		rw.wroteHeader = true
+	}
 }
 
 func (rw *wrappedResponseWriter) Write(b []byte) (int, error) {
+	if !rw.wroteHeader {
+		rw.WriteHeader(http.StatusOK)
+	}
 	bytes, err := rw.ResponseWriter.Write(b)
 	rw.bytesWritten += bytes
 	return bytes, err
