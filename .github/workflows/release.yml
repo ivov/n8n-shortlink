@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 
 permissions:
   packages: write
@@ -31,7 +31,6 @@ jobs:
         with:
           context: .
           push: true
-          platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/ivov/n8n-shortlink:latest
             ghcr.io/ivov/n8n-shortlink:${{ env.RELEASE_VERSION }}
