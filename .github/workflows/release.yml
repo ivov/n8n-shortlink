@@ -33,6 +33,8 @@ jobs:
         with:
           context: .
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           platforms: linux/arm64
           # Disable provenance to prevent multi-platform index with unused layers like `unknown/unknown`
           # https://github.com/docker/buildx/issues/1509#issuecomment-1378538197
