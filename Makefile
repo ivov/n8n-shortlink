@@ -150,12 +150,16 @@ vps/login:
 	ssh n8n-shortlink-infra
 .PHONY: vps/login
 
-## vps/caddy/logs: Tail Caddy logs
-vps/caddy/logs:
+## vps/logs/proxy: Tail reverse proxy logs
+vps/logs/proxy:
 	ssh n8n-shortlink-infra "journalctl -u caddy -f"
-.PHONY: vps/caddy/logs
+.PHONY: vps/logs/proxy
 
 ## vps/logs/app: Tail app container logs
-vps/app/logs:
+vps/logs/app:
 	ssh n8n-shortlink-infra "docker logs -f n8n-shortlink"
-.PHONY: vps/app/logs
+.PHONY: vps/logs/app
+
+## vps/redeploy: Prompt watchtower to poll and deploy new version
+vps/redeploy:
+	ssh n8n-shortlink-infra "docker exec watchtower /watchtower --run-once n8n-shortlink"
