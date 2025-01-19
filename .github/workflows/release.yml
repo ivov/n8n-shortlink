@@ -34,6 +34,9 @@ jobs:
           context: .
           push: true
           platforms: linux/arm64
+          # Disable provenance to prevent multi-platform index with unused layers like `unknown/unknown`
+          # https://github.com/docker/buildx/issues/1509#issuecomment-1378538197
+          provenance: false
           tags: |
             ghcr.io/ivov/n8n-shortlink:latest
             ghcr.io/ivov/n8n-shortlink:${{ env.RELEASE_VERSION }}
