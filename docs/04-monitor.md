@@ -1,10 +1,12 @@
 # Monitor
 
+> Under construction
+
 ## Overview
 
 In the `n8n-shortlink-network` network, we have these services running:
 
-- http://n8n-shortlink:3001 → Shortlink API exposes Prometheus metrics, some derived from [expvar](https://pkg.go.dev/expvar).  
+- http://n8n-shortlink:3001 → Shortlink API exposes Prometheus metrics, some derived from [expvar](https://pkg.go.dev/expvar).
 - http://prometheus:9090 → [Prometheus](https://prometheus.io/) to scrape and aggregate metrics.
 - http://node_exporter:9100 → [Node Exporter](https://github.com/prometheus/node_exporter) to expose host metrics.
 - http://cadvisor:8080 → [cAdvisor](https://github.com/google/cadvisor) to expose container metrics.
