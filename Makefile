@@ -119,7 +119,7 @@ db/mig/up:
 
 ## docker/build: Build Docker image `n8n-shortlink:local`
 docker/build:
-	docker build --tag n8n-shortlink:local .
+	docker build --tag n8n-shortlink:local --build-arg TARGETPLATFORM=linux/arm64 .
 .PHONY: docker/build
 
 ## docker/run: Run Docker container off image `n8n-shortlink:local`
