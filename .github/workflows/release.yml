@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3 # for cross-arch build - GH runners are AMD but VPS is ARM
 
       - name: Set release version
         # `#v` to strip the `v` prefix: v1.2.3 -> 1.2.3

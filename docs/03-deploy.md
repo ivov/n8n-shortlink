@@ -32,22 +32,27 @@ git status
 2. Create a tag (following semver) and push it to remote:
 
 ```sh
-git tag v1.2.3
-git push origin v1.2.3
+git tag v1.0.4
+git push origin v1.0.4
 ```
 
-This tag push triggers the [`release` workflow](https://github.com/ivov/n8n-shortlink/actions/workflows/release.yml). On completion, the new image is [listed](https://github.com/ivov/n8n-shortlink/pkgs/container/n8n-shortlink) on GHCR. Watchtower will discover the image and deploy it to production.
+This tag push triggers the [`release` workflow](https://github.com/ivov/n8n-shortlink/actions/workflows/release.yml) to build an ARM64 Docker image. The new image will be [listed](https://github.com/ivov/n8n-shortlink/pkgs/container/n8n-shortlink) on GHCR.
 
-Watchtower polls every six hours. To prompt Watchtower to check immediately:
+Watchtower polls for new versions of this image every six hours. On discovering a new version of this image, Watchtower will update the container to the new image version.
+
+To prompt Watchtower to check immediately:
 
 ```sh
-ssh n8n-shortlink-infra "docker kill --signal=SIGHUP watchtower"
+# on a terminal
+ssh n8n-shortlink-infra
+docker logs -f watchtower
+
+# on another terminal
+ssh n8n-shortlink-infra
+docker exec watchtower /watchtower --run-once n8n-shortlink
 ```
 
-Then wait for Watchtower to pull the new image and start the container, and watch for the new version being deployed:
+## TODOs
 
-```sh
-# on separate terminals
-ssh n8n-shortlink-infra "docker logs -f n8n-shortlink"
-ssh n8n-shortlink-infra "docker logs -f watchtower"
-```
+- [] Surface version via `/healthz`
+- [] Remove `unknown/unknown` from published image
