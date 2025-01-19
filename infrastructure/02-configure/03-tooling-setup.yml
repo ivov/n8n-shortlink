@@ -66,6 +66,29 @@
         groups: docker
         append: yes
 
+    - name: Set up Docker config dir
+      file:
+        path: "/home/{{ ansible_user }}/.docker"
+        state: directory
+        mode: "0700"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Configure Docker CLI defaults
+      copy:
+        dest: "/home/{{ ansible_user }}/.docker/config.json"
+        # Make `docker ps` and `docker stats` more readable.
+        content: |
+          {% raw %}
+          {
+            "psFormat": "table {{.ID}}\\t{{.Image}}\\t{{.Status}}\\t{{.Names}}",
+            "statsFormat": "table {{.Name}}\\t{{.CPUPerc}}\\t{{.MemUsage}}\\t{{.MemPerc}}"
+          }
+          {% endraw %}
+        mode: "0644"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
     # The `docker-compose` apt package often lags behind the latest release, so we install it manually from GitHub.
     - name: Download docker-compose
       get_url:
@@ -84,7 +107,7 @@
     - name: Create Docker network for n8n-shortlink
       community.docker.docker_network:
         name: n8n-shortlink-network
-        state: present 
+        state: present
 
     # ==================================
     #             sqlite3
