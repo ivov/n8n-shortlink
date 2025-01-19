@@ -27,14 +27,16 @@ live:
 
 lint:
 	golangci-lint run
+.PHONY: lint
 
 lintfix:
 	golangci-lint run --fix
+.PHONY: lintfix
 
 # ------------
 #    audit
 # ------------
-
+# sdlaksdjlask dlaksd asdlkjasdl as 
 ## audit: Run `go mod tidy`, `go fmt`, `golint`, `go test`, and `go vet`
 audit:
 	echo 'Tidying...'
@@ -163,3 +165,4 @@ vps/logs/app:
 ## vps/redeploy: Prompt watchtower to poll and deploy new version
 vps/redeploy:
 	ssh n8n-shortlink-infra "docker exec watchtower /watchtower --run-once n8n-shortlink"
+.PHONY: vps/redeploy
