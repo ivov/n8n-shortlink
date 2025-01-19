@@ -51,8 +51,3 @@ docker logs -f watchtower
 ssh n8n-shortlink-infra
 docker exec watchtower /watchtower --run-once n8n-shortlink
 ```
-
-## TODOs
-
-- [] Surface version via `/healthz`
-- [] Remove `unknown/unknown` from published image
