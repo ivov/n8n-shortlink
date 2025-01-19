@@ -6,7 +6,9 @@ COPY . ./
 ENV CGO_ENABLED=1
 RUN apk add --no-cache git build-base sqlite 
 RUN go mod download
-RUN go build -o bin cmd/server/main.go
+RUN BUILD_TIME=$(date +"%Y-%m-%dT%H:%M:%S%z") && \
+   GIT_COMMIT=$(git describe --always --dirty) && \
+   go build -ldflags="-s -X main.commitSha=$GIT_COMMIT -X main.buildTime=$BUILD_TIME" -o bin cmd/server/main.go
 
 FROM alpine:latest
 RUN mkdir /root/.n8n-shortlink

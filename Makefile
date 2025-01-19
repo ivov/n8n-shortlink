@@ -3,6 +3,10 @@
 HOME_DIR := $(shell echo $$HOME)
 DB_PATH := $(HOME_DIR)/.n8n-shortlink/n8n-shortlink.sqlite
 
+CURRENT_TIME = $(shell date +"%Y-%m-%dT%H:%M:%S%z")
+GIT_DESCRIPTION = $(shell git describe --always --dirty)
+LINKER_FLAGS = '-s -X main.commitSha=${GIT_DESCRIPTION} -X main.buildTime=${CURRENT_TIME}'
+
 help:
 	@echo "Commands:"
 	@sed -n 's/^##//p' $(MAKEFILE_LIST)
@@ -13,7 +17,7 @@ help:
 
 ## run: Build and run binary
 run:
-	go run cmd/server/main.go
+	go run -ldflags=${LINKER_FLAGS} cmd/server/main.go
 .PHONY: run
 
 ## live: Run binary with live reload
@@ -58,10 +62,6 @@ test/watch:
 # ------------
 #    build
 # ------------
-
-CURRENT_TIME = $(shell date +"%Y-%m-%dT%H:%M:%S%z")
-GIT_DESCRIPTION = $(shell git describe --always --dirty)
-LINKER_FLAGS = '-s -X main.commitSha=${GIT_DESCRIPTION} -X main.buildTime=${CURRENT_TIME}'
 
 ## build: Build binary, burning in commit SHA and build time
 build:
