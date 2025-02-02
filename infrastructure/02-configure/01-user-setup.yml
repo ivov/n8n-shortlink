@@ -48,13 +48,13 @@
       lineinfile:
         path: /etc/ssh/sshd_config
         regexp: "^#?PermitRootLogin"
-        line: "PermitRootLogin no" # disable login for root (even with SSH)
+        line: "PermitRootLogin no" # disable SSH login for root
 
     - name: Disable password authentication for SSH
       lineinfile:
         path: /etc/ssh/sshd_config
         regexp: "^#?PasswordAuthentication"
-        line: "PasswordAuthentication no" # allow only SSH login for remaining users
+        line: "PasswordAuthentication no" # enforce key-based auth for SSH for all users
 
     - name: Restart SSH service
       service:
