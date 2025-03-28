@@ -14,15 +14,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
 
-    - name: Get changed files
-      id: changed-files
-      uses: tj-actions/changed-files@v45.0.4
-      with:
-        files: infrastructure/02-configure/**/*.sh
-
     - name: Shell check
       uses: ludeeus/action-shellcheck@2.0.0
-      if: steps.changed-files.outputs.any_changed == 'true'
       with:
         version: v0.10.0
         scandir: './infrastructure/02-configure'
