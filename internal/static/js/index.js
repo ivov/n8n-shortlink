@@ -19,6 +19,7 @@ const ERROR_CODES_TO_MESSAGES = {
   SLUG_MISFORMATTED: "Invalid chars! Only base64",
   PASSWORD_TOO_SHORT: "Too short! Min 8 chars",
   PAYLOAD_TOO_LARGE: "Too large! Max 5 MB",
+  CONTENT_BLOCKED: "Content blocked - suspicious URL detected",
 };
 
 function resetForm() {
@@ -64,7 +65,7 @@ function updateShortenButtonState() {
   if (isDisabled) {
     shortenButton.setAttribute(
       "title",
-      "Please enter a workflow or URL to shorten"
+      "Please enter a workflow or URL to shorten",
     );
   } else {
     shortenButton.removeAttribute("title");

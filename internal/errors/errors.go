@@ -41,6 +41,9 @@ var (
 
 	// ErrPayloadTooLarge is returned when the payload is too large.
 	ErrPayloadTooLarge = stdErrors.New("payload is too large - max size is 5 MB")
+
+	// ErrContentBlocked is returned when content contains suspicious patterns.
+	ErrContentBlocked = stdErrors.New("content blocked - suspicious pattern detected")
 )
 
 // ToCode maps errors to error codes.
@@ -58,4 +61,5 @@ var ToCode = map[error]string{
 	ErrPasswordTooShort:    "PASSWORD_TOO_SHORT",
 	ErrPayloadTooLarge:     "PAYLOAD_TOO_LARGE",
 	ErrPasswordInvalid:     "PASSWORD_INVALID",
+	ErrContentBlocked:      "CONTENT_BLOCKED",
 }

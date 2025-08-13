@@ -699,4 +699,48 @@ func TestAPI(t *testing.T) {
 			assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 		})
 	})
+
+	t.Run("content validation", func(t *testing.T) {
+		testCases := []struct {
+			name        string
+			content     string
+			shouldBlock bool
+		}{
+			{"legitimate URL", "https://example.com", false},
+			{"n8n workflow", "https://n8n.io/workflows/123", false},
+			{"github repo", "https://github.com/user/repo", false},
+
+			{"cpanel phishing", "https://oauth-us-est-25.178-128-96-243.cpanel.site/?access", true},
+			{"payment scam", "https://depop.order-payment2232321.cyou/245918330", true},
+			{"screenconnect", "https://digslhrizxde.screenconnect.com/Bin/ScreenConnect.ClientSetup.exe", true},
+			{"signin phishing", "https://evil.com/signin-portal", true},
+			{"delivery scam", "https://fake-fedex.com/delivery-notification", true},
+
+			{"workflow with signin", `{"nodes":[{"name":"signin-node","type":"webhook"}]}`, false},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				shortlink := entities.Shortlink{Content: tc.content}
+
+				body, err := json.Marshal(shortlink)
+				require.NoError(t, err)
+
+				resp, err := http.Post(server.URL+"/shortlink", "application/json", bytes.NewBuffer(body))
+				require.NoError(t, err)
+				defer resp.Body.Close()
+
+				if tc.shouldBlock {
+					assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+
+					var errorResponse ErrorResponse
+					err = json.NewDecoder(resp.Body).Decode(&errorResponse)
+					require.NoError(t, err)
+					assert.Equal(t, "CONTENT_BLOCKED", errorResponse.Error.Code)
+				} else {
+					assert.Equal(t, http.StatusCreated, resp.StatusCode)
+				}
+			})
+		}
+	})
 }
