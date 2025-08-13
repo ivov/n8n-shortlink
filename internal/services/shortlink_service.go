@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/ivov/n8n-shortlink/internal/db/entities"
 	"github.com/ivov/n8n-shortlink/internal/errors"
@@ -54,8 +55,10 @@ func (ss *ShortlinkService) SaveShortlink(shortlink *entities.Shortlink) (*entit
 	return shortlink, nil
 }
 
-const defaultSlugLength = 4 // 64^4 = ~16.7 million possible slugs
-const maxUserSlugLength = 512
+const (
+	defaultSlugLength = 4 // 64^4 = ~16.7 million possible slugs
+	maxUserSlugLength = 512
+)
 
 // GenerateSlug generates a random URL-encoded shortlink slug, ensuring uniqueness with DB.
 func (ss *ShortlinkService) GenerateSlug() (string, error) {
@@ -187,4 +190,49 @@ func (ss *ShortlinkService) ValidatePasswordLength(password string) error {
 func (ss *ShortlinkService) VerifyPassword(hashedPassword, plaintextPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plaintextPassword))
 	return err == nil
+}
+
+var suspiciousPatterns = []string{
+	"cpanel.site",
+	"screenconnect.com",
+	"oauth-",
+	"order-payment",
+	"order-delivery",
+
+	"signin", "sign-in", "login", "log-in",
+	"auth-", "sso-", "verify-account",
+	"confirm-account", "activate-account",
+	"account-verification", "account-suspended",
+
+	"payment-", "billing-", "invoice-",
+	"paypal-", "stripe-", "bank-",
+	"refund-", "chargeback", "creditcard",
+
+	"delivery-", "package-", "shipment-",
+	"fedex-", "ups-", "dhl-", "usps-",
+	"tracking-", "delivered-",
+
+	"support-", "helpdesk-", "tech-support",
+	"microsoft-", "apple-", "google-",
+	"virus-detected", "security-alert",
+
+	"urgent-", "immediate-", "suspended-",
+	"update-", "renew-", "expire-",
+	"winner-", "congratulations-", "prize-",
+
+	".tk/", ".ml/", ".ga/", ".cf/",
+
+	"bit.ly", "tinyurl.com", "t.co", "goo.gl",
+}
+
+func (ss *ShortlinkService) ValidateContent(content string) error {
+	contentLower := strings.ToLower(content)
+
+	for _, pattern := range suspiciousPatterns {
+		if strings.Contains(contentLower, pattern) {
+			return errors.ErrContentBlocked
+		}
+	}
+
+	return nil
 }

@@ -14,7 +14,6 @@ import (
 
 // HandlePostShortlink handles a POST /shortlink request by creating a shortlink.
 func (api *API) HandlePostShortlink(w http.ResponseWriter, r *http.Request) {
-
 	// check size limit
 
 	const maxPayloadSize = 5 * 1024 * 1024 // 5 MB
@@ -57,6 +56,13 @@ func (api *API) HandlePostShortlink(w http.ResponseWriter, r *http.Request) {
 	if err := api.ShortlinkService.ValidateKind(candidate.Kind); err != nil {
 		api.BadRequest(errors.ErrKindUnsupported, w)
 		return
+	}
+
+	if candidate.Kind == "url" {
+		if err := api.ShortlinkService.ValidateContent(candidate.Content); err != nil {
+			api.BadRequest(errors.ErrContentBlocked, w)
+			return
+		}
 	}
 
 	// check or generate slug
