@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	stdErrors "errors"
-	"fmt"
 	"net/http"
 	"net/url"
 
@@ -32,7 +31,7 @@ func (api *API) HandlePostShortlink(w http.ResponseWriter, r *http.Request) {
 		if err.Error() == "http: request body too large" {
 			api.BadRequest(errors.ErrPayloadTooLarge, w)
 		} else {
-			api.InternalServerError(fmt.Errorf("failed to decode JSON: %w", err), w)
+			api.BadRequest(errors.ErrContentMalformed, w)
 		}
 		return
 	}
