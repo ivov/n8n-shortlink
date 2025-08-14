@@ -408,6 +408,17 @@ func TestAPI(t *testing.T) {
 			}
 		})
 
+		t.Run("should reject on malformed JSON", func(t *testing.T) {
+			resp, err := http.Post(server.URL+"/shortlink", "application/json", strings.NewReader("create shortlink"))
+			require.NoError(t, err)
+			defer resp.Body.Close()
+
+			assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+
+			errorResponse := toErrorResponse(resp.Body)
+			assert.Equal(t, errors.ToCode[errors.ErrContentMalformed], errorResponse.Error.Code)
+		})
+
 		t.Run("should reject on duplicate custom slug in payload", func(t *testing.T) {
 			candidate := entities.Shortlink{
 				Slug:    "some-custom-slug",
